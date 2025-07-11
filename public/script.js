@@ -67,29 +67,28 @@ function showStartScreen() {
   const startContainer = document.createElement('div');
   // Adiciona a classe genérica de overlay E a classe específica de start
   startContainer.classList.add('overlay-screen', 'start-container');
-  startContainer.id = 'startContainer'; // Mantém o ID para referência, se necessário
+  startContainer.id = 'startContainer'; // 
 
   // Título do jogo
   const title = document.createElement('h1');
   title.textContent = 'TRABALHAR NÃO DÁ REVIEW NO LETTERBOXD';
-  title.classList.add('game-title'); // Usa classe CSS
+  title.classList.add('game-title'); // 
 
   // Input para o nickname
   const nicknameInput = document.createElement('input');
   nicknameInput.setAttribute('type', 'text');
   nicknameInput.setAttribute('placeholder', 'Seu Nickname (até 8 letras)');
   nicknameInput.setAttribute('maxlength', '8');
-  nicknameInput.classList.add('nickname-input'); // Usa classe CSS
+  nicknameInput.classList.add('nickname-input'); // 
 
   // Mensagem de erro para o nickname
   const nicknameError = document.createElement('p');
   nicknameError.classList.add('nickname-error'); // Usa classe CSS
-  nicknameError.style.display = 'none'; // Este estilo permanece no JS para controle dinâmico
+  nicknameError.style.display = 'none'; // 
 
   // Botão de start
   const startButton = document.createElement('button');
   startButton.textContent = 'START!';
-  // Adiciona a classe genérica de botão E a classe específica de start
   startButton.classList.add('game-button', 'start-button'); // Usa classe CSS
 
   // Evento de clique do botão Start
@@ -128,7 +127,7 @@ function showStartScreen() {
   drawBackground();
 }
 
-// Desenhar background (chamado uma vez na tela inicial para garantir que o canvas não esteja vazio)
+// Desenhar background 
 function drawBackground() {
   ctx.drawImage(imgBackground, 0, 0, canvas.width, canvas.height);
 }
@@ -290,12 +289,12 @@ async function showGameOver() {
   bgMusic.pause(); // Garante que a música pare
 
   // URL backend Vercel
-  const backendUrl = 'https://game-cinefilo.vercel.app/api'; // Este já inclui '/api'
+  const backendUrl = 'https://game-cinefilo.vercel.app/api';
 
   // Enviar o score para o backend
   if (playerNickname && score > 0) { // Envie apenas se houver nickname e score válido
     try {
-      const response = await fetch(`${backendUrl}/scores`, { // REMOVIDO o '/api' extra aqui
+      const response = await fetch(`${backendUrl}/scores`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -320,7 +319,7 @@ async function showGameOver() {
   // Buscar e exibir o ranking
   let topScores = [];
   try {
-    const response = await fetch(`${backendUrl}/top10`); // REMOVIDO o '/api' extra aqui
+    const response = await fetch(`${backendUrl}/top10`);
     if (response.ok) {
       topScores = await response.json();
     } else {
@@ -331,21 +330,20 @@ async function showGameOver() {
   }
 
   const gameOverScreen = document.createElement('div');
-  // Adiciona a classe genérica de overlay E a classe específica de game over
-  gameOverScreen.classList.add('overlay-screen', 'game-over-screen'); // Usa classe CSS
+  gameOverScreen.classList.add('overlay-screen', 'game-over-screen');
 
   const gameOverText = document.createElement('h1');
   gameOverText.textContent = 'VOCÊ FOI CONTRATADO.';
-  gameOverText.classList.add('game-over-title'); // Usa classe CSS
+  gameOverText.classList.add('game-over-title'); 
 
   const scoreText = document.createElement('div');
   scoreText.textContent = `Pontuação: ${score}`;
-  scoreText.classList.add('final-score-text'); // Usa classe CSS
+  scoreText.classList.add('final-score-text');
 
   // Tabela de ranking
   const rankingTitle = document.createElement('h2');
   rankingTitle.textContent = 'TOP 10 PONTUAÇÕES';
-  rankingTitle.classList.add('ranking-title'); // Usa classe CSS
+  rankingTitle.classList.add('ranking-title');
 
   const rankingList = document.createElement('ul');
   rankingList.classList.add('ranking-list'); // Usa classe CSS
@@ -374,7 +372,7 @@ async function showGameOver() {
 
   gameOverScreen.appendChild(gameOverText);
   gameOverScreen.appendChild(scoreText);
-  gameOverScreen.appendChild(rankingTitle); // Adiciona o título do ranking
+  gameOverScreen.appendChild(rankingTitle);
   gameOverScreen.appendChild(rankingList); // Adiciona a lista de ranking
   gameOverScreen.appendChild(restartButton);
   document.body.appendChild(gameOverScreen);
