@@ -7,7 +7,6 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  /* Aplica a fonte pixel art para todo o corpo, garantindo que a maioria dos elementos herde */
   font-family: 'Press Start 2P', cursive, sans-serif;
   color: white; /* Cor de texto padrão para o corpo, pode ser sobrescrita por seletores mais específicos */
 }
@@ -15,12 +14,12 @@ body {
 canvas {
   background-color: #222;
   border: 2px solid #fff;
-  width: 900px; /* Garante que corresponde ao HTML/JS */
-  height: 600px; /* Garante que corresponde ao HTML/JS */
+  width: 900px; 
+  height: 600px; 
 }
 
 /* Estilos para as telas de sobreposição (start e game over) */
-.overlay-screen { /* Classe genérica para start-container e game-over-screen */
+.overlay-screen {
   position: fixed;
   top: 0;
   left: 0;
@@ -31,8 +30,7 @@ canvas {
   justify-content: center;
   align-items: center;
   z-index: 100;
-  /* A backdrop-filter é definida nas classes específicas abaixo */
-  /* A transition para opacity será manipulada no JS */
+
 }
 
 /* Estilos específicos para o container de start */
@@ -45,24 +43,22 @@ canvas {
 .game-over-screen {
   background: rgba(0,0,0,0.8);
   backdrop-filter: blur(5px); /* Blur mais intenso para a tela de game over */
-  /* A font-family e color já vêm do body */
 }
 
 
 /* Estilos para títulos (h1, h2) */
 .game-title { /* Para o H1 da tela inicial */
   color: #fff;
-  /* font-family já herdado do body */
-  font-size: 2rem; /* Alterado por você */
+  font-size: 2rem; 
   text-shadow: 0 0 10px rgba(82, 5, 5, 0.8);
   margin-bottom: 2rem;
   letter-spacing: 2px;
-  text-align: center; /* Adicionado por você */
+  text-align: center; 
 }
 
 .game-over-title { /* Para o H1 da tela de game over */
   font-size: 4rem;
-  color: #9b0404; /* Alterado por você */
+  color: #9b0404;
   text-shadow: 0 0 10px rgb(169, 9, 9);
   margin-bottom: 1rem;
 }
@@ -73,7 +69,6 @@ canvas {
     margin-bottom: 1rem;
     font-size: 1.8rem;
     text-shadow: 0 0 8px rgba(82, 5, 5, 0.8);
-    /* font-family já herdado do body */
 }
 
 
@@ -89,7 +84,6 @@ canvas {
   width: 250px;
   background-color: rgba(255, 255, 255, 0.1); /* Um leve fundo translúcido para o input */
   color: white; /* Cor do texto digitado no input */
-  /* *** Adicionado ou corrigido: Garante a fonte para o input *** */
   font-family: 'Press Start 2P', cursive, sans-serif;
 }
 /* Estilo para o placeholder do input (requer a declaração de font-family explicitamente) */
@@ -98,22 +92,18 @@ canvas {
   font-family: 'Press Start 2P', cursive, sans-serif; /* Garante que o placeholder use a fonte pixel art */
 }
 
-
 /* Estilos para a mensagem de erro do nickname */
 .nickname-error {
   color: red;
   font-size: 0.9rem;
   margin-top: -1rem;
   margin-bottom: 1rem;
-  /* display: none; será manipulado no JS */
-  /* font-family já herdado do body */
 }
 
-
 /* Estilos para os botões */
-.game-button { /* Classe genérica para start-button e restart-button */
+.game-button {
   padding: 15px 40px;
-  font-size: 1.5rem; /* Tamanho da fonte padrão para botões (ajustado em restart-button) */
+  font-size: 1.5rem;
   font-weight: bold;
   background-color: rgb(108, 95, 95);
   color: white;
@@ -124,13 +114,12 @@ canvas {
   transition: all 0.3s ease; /* Transição suave para efeitos de hover/active */
   position: relative;
   overflow: hidden;
-  /* *** Adicionado ou corrigido: Garante a fonte para os botões *** */
   font-family: 'Press Start 2P', cursive, sans-serif;
 }
 
 /* Efeito hover genérico para os botões */
 .game-button:hover {
-  transform: translateY(-3px); /* Move ligeiramente para cima no hover */
+  transform: translateY(-3px); 
   box-shadow: 0 8px 20px rgba(0,0,0,0.4); /* Sombra mais pronunciada no hover */
 }
 
@@ -139,17 +128,16 @@ canvas {
   transform: translateY(2px); /* Move ligeiramente para baixo no clique */
 }
 
-/* Estilo específico para o botão de restart (sobrescreve o font-size do .game-button) */
+/* Estilo específico para o botão de restart */
 .restart-button {
   font-size: 1.2rem;
-  background-color: rgb(108, 95, 95); /* Manter a cor base */
+  background-color: rgb(108, 95, 95);
 }
 
 /* Efeito hover específico para o botão de restart (mudar cor no hover) */
 .restart-button:hover {
-  background-color: rgb(125, 97, 97); /* Cor de hover ligeiramente diferente */
+  background-color: rgb(125, 97, 97);
 }
-
 
 /* Estilos para o texto de pontuação final */
 .final-score-text {
@@ -169,12 +157,10 @@ canvas {
 .ranking-list li {
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
-    color: #eee; /* Cor ligeiramente diferente para os itens da lista */
-    /* font-family já herdado do body */
+    color: #eee; /
 }
 
 .ranking-list .no-scores { /* Para a mensagem 'Nenhuma pontuação registrada' */
     font-size: 1.2rem;
     color: #aaa;
-    /* font-family já herdado do body */
 }
