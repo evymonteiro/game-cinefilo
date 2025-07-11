@@ -320,7 +320,7 @@ async function showGameOver() {
   // Buscar e exibir o ranking
   let topScores = [];
   try {
-    const response = await fetch(`${backendUrl}/scores/top10`); // REMOVIDO o '/api' extra aqui
+    const response = await fetch(`${backendUrl}/top10`); // REMOVIDO o '/api' extra aqui
     if (response.ok) {
       topScores = await response.json();
     } else {
