@@ -36,7 +36,7 @@ const Score = mongoose.model('Score', scoreSchema);
 // Endpoints da API
 
 // 1. Enviar uma nova pontuação
-app.post('/api/scores', async (req, res) => {
+app.post('/scores', async (req, res) => {
   const { nickname, score } = req.body;
 
   if (!nickname || !score) {
@@ -59,7 +59,7 @@ app.post('/api/scores', async (req, res) => {
 });
 
 // 2. Obter as 10 maiores pontuações
-app.get('/api/scores/top10', async (req, res) => {
+app.get('/scores/top10', async (req, res) => {
   try {
     const topScores = await Score.find()
       .sort({ score: -1, date: 1 }) // Ordena pela pontuação em ordem decrescente, depois pela data em ordem crescente para desempate
