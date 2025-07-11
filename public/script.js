@@ -290,12 +290,12 @@ async function showGameOver() {
   bgMusic.pause(); // Garante que a música pare
 
   // URL backend Vercel
-const backendUrl = 'https://game-cinefilo.vercel.app/api';
+  const backendUrl = 'https://game-cinefilo.vercel.app/api'; // Este já inclui '/api'
 
   // Enviar o score para o backend
   if (playerNickname && score > 0) { // Envie apenas se houver nickname e score válido
     try {
-      const response = await fetch(`${backendUrl}/api/scores`, {
+      const response = await fetch(`${backendUrl}/scores`, { // REMOVIDO o '/api' extra aqui
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -320,7 +320,7 @@ const backendUrl = 'https://game-cinefilo.vercel.app/api';
   // Buscar e exibir o ranking
   let topScores = [];
   try {
-    const response = await fetch(`${backendUrl}/api/scores/top10`);
+    const response = await fetch(`${backendUrl}/scores/top10`); // REMOVIDO o '/api' extra aqui
     if (response.ok) {
       topScores = await response.json();
     } else {
