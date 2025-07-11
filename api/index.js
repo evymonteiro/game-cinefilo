@@ -1,30 +1,20 @@
-// server.js
-
-require('dotenv').config();
-
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); 
+const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Define a porta, 3000 por padrão se a env não for setada
+const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(cors()); // Permite requisições de diferentes origens
-app.use(express.json()); 
-
-// Conexão MongoDB
-
-console.log('Tentando conectar ao MongoDB com URI:', process.env.MONGODB_URI);
+app.use(cors());
+app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('MongoDB conectado com sucesso!'))
-.catch(err => console.error('Erro de conexão MongoDB:', err.message)); 
+.catch(err => console.error('Erro de conexão MongoDB:', err.message));
 
-//Pontuação
 const scoreSchema = new mongoose.Schema({
   nickname: { type: String, required: true, maxlength: 6 },
   score: { type: Number, required: true },
@@ -33,9 +23,6 @@ const scoreSchema = new mongoose.Schema({
 
 const Score = mongoose.model('Score', scoreSchema);
 
-// Endpoints da API
-
-// 1. Enviar uma nova pontuação
 app.post('/scores', async (req, res) => {
   const { nickname, score } = req.body;
 
@@ -43,7 +30,6 @@ app.post('/scores', async (req, res) => {
     return res.status(400).json({ message: 'Nickname e pontuação são obrigatórios.' });
   }
 
-  // A validação de maxlength foi 8 no frontend e 6 no backend.
   if (nickname.length > 6) {
     return res.status(400).json({ message: 'O nickname não pode exceder 6 caracteres.' });
   }
@@ -58,11 +44,10 @@ app.post('/scores', async (req, res) => {
   }
 });
 
-// 2. Obter as 10 maiores pontuações
 app.get('/scores/top10', async (req, res) => {
   try {
     const topScores = await Score.find()
-      .sort({ score: -1, date: 1 }) // Ordena pela pontuação em ordem decrescente, depois pela data em ordem crescente para desempate
+      .sort({ score: -1, date: 1 })
       .limit(10);
     res.status(200).json(topScores);
   } catch (error) {
