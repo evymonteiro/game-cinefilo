@@ -290,7 +290,7 @@ async function showGameOver() {
   bgMusic.pause(); // Garante que a música pare
 
   // URL backend Vercel
-const backendUrl = 'https://vercel.com/evelyn-monteiros-projects/game-cinefilo';
+const backendUrl = 'https://game-cinefilo.vercel.app/api';
 
   // Enviar o score para o backend
   if (playerNickname && score > 0) { // Envie apenas se houver nickname e score válido
