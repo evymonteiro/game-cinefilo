@@ -1,25 +1,26 @@
 /* style.css */
 
+
 body {
-    margin: 0;
-    background-color: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: 'Press Start 2P', cursive, sans-serif;
-    color: white; 
-     overflow: hidden;
+    margin: 0;
+    background-color: #111;
+    display: flex;
+    flex-direction: column;        /* permite empilhar verticalmente */
+    align-items: center;
+    font-family: 'Press Start 2P', cursive, sans-serif;
+    color: white;
+    overflow-x: hidden;            /* permite rolar para baixo se necessário */
 }
 
 canvas {
-    background-color: #222;
-    border: 2px solid #fff;
-    width: 100vw;
-    height: 100vh;
-    max-width: 900px;
-    max-height: 600px;
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    background-color: #222;
+    border: 2px solid #fff;
 }
+
 
 .overlay-screen {
     position: fixed;
