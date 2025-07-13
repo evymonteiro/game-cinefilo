@@ -1,53 +1,25 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <!-- Ajuste crucial para mobile: permite zoom e scroll padrão do navegador -->
+    <meta charset="UTF-8"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trabalhar não dá review no letterboxd.</title>
-    <!-- Link para a fonte pixel art -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <!-- Link para o seu arquivo CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- As telas de overlay (início, game over, modais) e os botões superiores
-         devem estar FORA do #game-wrapper, pois eles cobrem a tela inteira com position: fixed. -->
-
-    <!-- Top Buttons Container (Instruções, Sobre) -->
     <div class="top-buttons-container">
         <button id="instructionsBtn" class="info-button">INSTRUÇÕES:</button>
         <button id="aboutBtn" class="info-button">SOBRE:</button>
     </div>
+    <canvas id="gameCanvas" width="1100" height="700"></canvas>
 
-    <!-- Tela Inicial (Overlay) -->
-    <div id="startScreen" class="overlay-screen start-container">
-        <h1 class="game-title">TRABALHAR NÃO DÁ REVIEW NO LETTERBOXD</h1>
-        <input type="text" id="nicknameInput" class="nickname-input" placeholder="Nickname">
-        <p id="nicknameError" class="nickname-error" style="display: none;"></p>
-        
-        <div class="player-selection-container">
-            <h2 class="player-selection-title">Escolha seu personagem:</h2>
-            <div class="player-images-container" id="playerImagesContainer">
-                <!-- As imagens dos personagens serão inseridas aqui via JavaScript -->
-            </div>
+    <div id="touchControls" class="touch-controls-container">
+        <div class="touch-left-right-group"> <div id="leftBtn" class="touch-button">ESQ</div>
+            <div id="rightBtn" class="touch-button">DIR</div>
         </div>
-        
-        <button id="startButton" class="game-button">START!</button>
+        <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
     </div>
-
-    <!-- Tela de Game Over (Overlay) -->
-    <div id="gameOverScreen" class="overlay-screen game-over-screen" style="display: none;">
-        <h1 class="game-over-title">GAME OVER!</h1>
-        <p id="finalScoreText" class="final-score-text">Pontuação Final: 0</p>
-        <h2 class="ranking-title">RANKING</h2>
-        <ul id="rankingList" class="ranking-list">
-            <!-- O ranking será inserido aqui via JavaScript -->
-        </ul>
-        <button id="restartButton" class="game-button restart-button">RESTART</button>
-    </div>
-
-    <!-- Modal de Instruções -->
     <div id="instructionsModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeInstructions">&times;</span>
@@ -65,7 +37,6 @@
         </div>
     </div>
 
-    <!-- Modal Sobre -->
     <div id="aboutModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeAbout">&times;</span>
@@ -87,13 +58,14 @@
                 Disponível no Github: <a href="https://github.com/evymonteiro/game-cinefilo" target="_blank">Link do Repositório</a>
             </p>
             <p>As artes utilizadas foram geradas com a IA Gemini.</p>
-            <p>
-            Trilha Sonora:<br>
-            Stage 1: Max Richter - The Nature of Daylight.<br>
-            Stage 2: Trent Reznor & Atticus Ross - Challengers: Match Point<br>
-            Stage 3: Main Titles (MTG RUPTURA SEVERANCE BAILE FUNK) · MULUBEATS · BRUSA FUNK &#8471; 2025 Vamonos Music<br>
-            Game Over: Killer Queen Requiem - Jojo Bizarre Adventure Ost. <br>
-            </p>
+          <p>
+          Trilha Sonora:<br>
+          Stage 1: Max Richter - The Nature of Daylight.<br>
+          Stage 2: Trent Reznor & Atticus Ross - Challengers: Match Point<br>
+          Stage 3: Main Titles (MTG RUPTURA SEVERANCE BAILE FUNK) · MULUBEATS · BRUSA FUNK &#8471; 2025 Vamonos Music<br>
+          Game Over: Killer Queen Requiem - Jojo Bizarre Adventure Ost. <br>
+    
+           </p>
             <p>
                 Agradecimentos:<br>
                 Sarah Tenório
@@ -114,22 +86,6 @@
         </div>
     </div>
 
-    <!-- NOVO: O CONTÊINER PRINCIPAL PARA O JOGO E OS BOTÕES DE TOQUE -->
-    <!-- Este div irá agrupar o canvas e os controles para que o CSS possa posicioná-los juntos. -->
-    <div id="game-wrapper"> 
-        <canvas id="gameCanvas" width="1100" height="700"></canvas>
-
-        <!-- Botões de controle de toque (aparecem apenas em dispositivos touch) -->
-        <div id="touchControls" class="touch-controls-container">
-            <div class="touch-left-right-group">
-                <div id="leftBtn" class="touch-button">ESQ</div>
-                <div id="rightBtn" class="touch-button">DIR</div>
-            </div>
-            <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
-        </div>
-    </div>
-
-    <!-- Seu arquivo JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
