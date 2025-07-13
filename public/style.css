@@ -316,55 +316,52 @@ canvas {
 }
 
 .touch-controls-container {
-    position: relative;
-    bottom: 20px;
-    width: 100%;
-    display: flex; /* Flexbox para organizar os botões */
-    justify-content: space-between; 
-    padding: 0 70px; 
-    z-index: 1; /* Acima do canvas, mas abaixo dos modais */
-    display: none; /* POR PADRÃO, OS BOTÕES ESTÃO ESCONDIDOS */
-    box-sizing: border-box; /* Garante que padding não aumente a largura total */
-}
-
-.touch-left-right-group {
     display: flex;
-    gap: 60px; /* Espaço entre os botões 'ESQ' e 'DIR' */
+    justify-content: center; /* centraliza os botões horizontalmente */
+    align-items: center;     /* alinha verticalmente */
+    gap: 30px;               /* espaço entre todos os botões */
+    margin-top: 20px;        /* distância do canvas */
+    width: 100%;
+    position: relative;      /* padrão para não sobrepor */
 }
 
+/* Removendo o estilo da div que agrupava os botões ESQ e DIR,
+   pois não é necessário mais. Se quiser pode remover essa div no HTML */
+
+/* Botões individuais */
 .touch-button {
-    background-color: rgba(50, 50, 50, 0.7); /* Fundo escuro semi-transparente */
-    border: 2px solid rgba(255, 255, 255, 0.5); /* Borda mais clara */
+    background-color: rgba(50, 50, 50, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.5);
     color: white;
     font-family: 'Press Start 2P', cursive, sans-serif;
     font-size: 1.2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px; /* Cantos arredondados */
-    user-select: none; /* Impede a seleção de texto ao tocar */
-    -webkit-tap-highlight-color: transparent; /* Remove o destaque de toque no iOS/Android */
-    cursor: pointer; /* Indica que é clicável */
-    transition: background-color 0.1s ease, border-color 0.1s ease; /* Transição suave */
+    border-radius: 10px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.1s ease, border-color 0.1s ease;
 }
 
-/* Botões de Esquerda e Direita */
+/* Tamanho dos botões ESQ e DIR */
 #leftBtn, #rightBtn {
     width: 90px;
     height: 90px;
 }
 
-/* Botão de Pular */
+/* Botão PULAR maior e redondo */
 .jump-button {
     width: 120px;
     height: 120px;
-    border-radius: 50%; /* Torna o botão redondo */
-    background-color: rgba(100, 100, 200, 0.7); /* Uma cor diferente para o botão de pular */
+    border-radius: 50%;
+    background-color: rgba(100, 100, 200, 0.7);
 }
 
-/* Estilo para o botão quando ele está "pressionado" (ativo) */
+/* Efeito de botão pressionado */
 .touch-button.active {
-    background-color: rgba(0, 255, 0, 0.7); /* Verde quando ativo */
+    background-color: rgba(0, 255, 0, 0.7);
     border-color: #0f0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
