@@ -1,24 +1,26 @@
 /* style.css */
 
 body {
-    margin: 0;
-    background-color: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: 'Press Start 2P', cursive, sans-serif;
-    color: white; 
-     overflow: hidden;
+  min-height: 100vh; /* ou simplesmente remova height fixa */
+  margin: 0;
+  background-color: #111;
+  font-family: 'Press Start 2P', cursive, sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;  /* para o layout ficar vertical */
+  align-items: center;     /* centraliza horizontalmente */
 }
 
+
 canvas {
-    background-color: #222;
-    border: 2px solid #fff;
-    width: 100vw;
-    height: 100vh;
-    max-width: 900px;
-    max-height: 600px;
+  width: 100vw;        /* largura da viewport */
+  max-width: 1100px;   /* limita a largura máxima */
+  height: auto;        /* ajusta a altura proporcionalmente */
+  max-height: 700px;   /* limita a altura máxima */
+  background-color: #222;
+  border: 2px solid #fff;
+  display: block;      /* remove espaços em branco abaixo */
+  margin: 0 auto;      /* centraliza horizontalmente */
 }
 
 .overlay-screen {
@@ -316,13 +318,16 @@ canvas {
 }
 
 .touch-controls-container {
-    display: flex;
-    justify-content: center; /* centraliza os botões horizontalmente */
-    gap: 30px;               /* espaço entre todos os botões */
-    margin-top: 40px;        /* distância do canvas */
-    width: 100%;
-    position: relative;      /* padrão para não sobrepor */
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 150px 0 0 0;  /* só margem em cima para afastar do canvas */
+  width: 100%;         /* largura total da tela */
+  box-sizing: border-box;
+  padding: 0 20px;     /* opcional, pra dar um espaçamento nas laterais */
 }
+
+
 
 /* Botões individuais */
 .touch-button {
