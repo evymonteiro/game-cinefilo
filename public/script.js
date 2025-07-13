@@ -3,6 +3,17 @@ const ctx = canvas.getContext("2d");
 const gameWrapper = document.getElementById('game-wrapper');
 let currentScale = 1;
 
+// Referências a elementos da tela inicial e game over (agora no HTML)
+const startScreen = document.getElementById('startScreen');
+const nicknameInput = document.getElementById('nicknameInput');
+const nicknameError = document.getElementById('nicknameError');
+const playerImagesContainer = document.getElementById('playerImagesContainer');
+const startButton = document.getElementById('startButton');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const finalScoreText = document.getElementById('finalScoreText');
+const rankingList = document.getElementById('rankingList');
+const restartButton = document.getElementById('restartButton');
+
 
 // CRIAÇÃO DE BOTÕES VIRTUAIS PARA USO EM TOUCHSCREEN:
 
@@ -84,11 +95,19 @@ function setupTouchListeners() {
         jumpTouchBtn.classList.remove('active'); 
     });
 
-    // Impedir Scroll
-    const gameCanvas = document.getElementById('gameCanvas'); // Pegue a referência ao seu canvas
+    // Impedir Scroll no Canvas SOMENTE QUANDO O JOGO ESTIVER ATIVO
+    const gameCanvas = document.getElementById('gameCanvas'); 
     if (gameCanvas) {
-        gameCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
-        gameCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+        gameCanvas.addEventListener('touchstart', (e) => { 
+            if (gameStarted) { // Só previne se o jogo estiver rodando
+                e.preventDefault(); 
+            }
+        }, { passive: false });
+        gameCanvas.addEventListener('touchmove', (e) => { 
+            if (gameStarted) { // Só previne se o jogo estiver rodando
+                e.preventDefault(); 
+            }
+        }, { passive: false });
     }
 }
 
@@ -257,14 +276,12 @@ function resizeGame() {
     jumpStrength = -15 * currentScale;
     speed = 4 * currentScale;
     
-    // NOVO: Ajusta as dimensões dos elementos existentes no jogo caso estejam em tela
+    // Ajusta as dimensões dos elementos existentes no jogo caso estejam em tela
     // Isso é importante para evitar que objetos fiquem com tamanhos incorretos ao redimensionar
     // enquanto o jogo está rodando.
     obstacles.forEach(o => {
         o.width = 60 * currentScale;
         o.height = 60 * currentScale;
-        // Ajusta a posição Y para que o objeto continue caindo da proporção correta
-        // Assumimos que a posição X já está ok se os objetos são spawnados aleatoriamente
     });
     slowdownItems.forEach(item => {
         item.width = 90 * currentScale;
@@ -458,36 +475,11 @@ function showTopButtons() {
 
 function showStartScreen() {
     showTopButtons();
-    const startContainer = document.createElement('div');
-    startContainer.classList.add('overlay-screen', 'start-container');
-    startContainer.id = 'startContainer';
+    startScreen.style.display = 'flex'; // Mostra a tela inicial (agora no HTML)
 
-    const title = document.createElement('h1');
-    title.textContent = 'TRABALHAR NÃO DÁ REVIEW NO LETTERBOXD';
-    title.classList.add('game-title');
-
-    const nicknameInput = document.createElement('input');
-    nicknameInput.setAttribute('type', 'text');
-    nicknameInput.setAttribute('placeholder', 'Nickname');
-    nicknameInput.setAttribute('maxlength', '8');
-    nicknameInput.classList.add('nickname-input');
-
-    const nicknameError = document.createElement('p');
-    nicknameError.classList.add('nickname-error');
-    nicknameError.style.display = 'none';
-
-    const playerSelectionContainer = document.createElement('div');
-    playerSelectionContainer.classList.add('player-selection-container');
-
-    const playerSelectionTitle = document.createElement('h2');
-    playerSelectionTitle.textContent = 'Escolha seu personagem:';
-    playerSelectionTitle.classList.add('player-selection-title');
-
-    const playerImagesContainer = document.createElement('div');
-    playerImagesContainer.classList.add('player-images-container');
-
-    let selectedPlayerId = null; 
-
+    // Preenche as imagens de seleção de personagem (ainda dinâmico)
+    playerImagesContainer.innerHTML = ''; // Limpa antes de adicionar
+    let selectedPlayerId = null; // Reinicia a seleção
     imgChoosePlayer.forEach(pData => {
         const playerImageWrapper = document.createElement('div');
         playerImageWrapper.classList.add('player-image-wrapper');
@@ -510,14 +502,8 @@ function showStartScreen() {
         playerImagesContainer.appendChild(playerImageWrapper);
     });
 
-    playerSelectionContainer.appendChild(playerSelectionTitle);
-    playerSelectionContainer.appendChild(playerImagesContainer);
-
-    const startButton = document.createElement('button');
-    startButton.textContent = 'START!';
-    startButton.classList.add('game-button', 'start-button');
-
-    startButton.addEventListener('click', () => {
+    // Event listener para o botão START (agora no HTML)
+    startButton.onclick = () => { // Usar onclick para evitar múltiplos listeners se showStartScreen for chamada várias vezes
         const nickname = nicknameInput.value.trim();
         if (nickname.length === 0 || nickname.length > 8) {
             nicknameError.textContent = 'O nickname deve ter entre 1 e 8 letras.';
@@ -534,15 +520,17 @@ function showStartScreen() {
         playerNickname = nickname;
         nicknameError.style.display = 'none';
         bgMusic.play().then(() => {
-            startContainer.style.opacity = '0';
-            startContainer.style.transition = 'opacity 0.5s ease';
+            startScreen.style.opacity = '0';
+            startScreen.style.transition = 'opacity 0.5s ease';
 
             setTimeout(() => {
-                document.body.removeChild(startContainer);
+                startScreen.style.display = 'none'; // Esconde a tela inicial
+                startScreen.style.opacity = '1'; // Reseta opacidade para a próxima vez
                 showStageMessage = true;
                 stageMessageAlpha = 1.0;
                 stageMessageTimer = STAGE_MESSAGE_DURATION; 
                 gameStarted = true;
+                initGame(); // Reinicia o jogo e aplica a escala
                 gameLoop(); 
             }, 500); 
         }).catch(error => {
@@ -550,14 +538,7 @@ function showStartScreen() {
             startButton.textContent = 'CLIQUE NOVAMENTE';
             startButton.style.backgroundColor = 'rgb(108, 95, 95)';
         });
-    });
-
-    startContainer.appendChild(title);
-    startContainer.appendChild(nicknameInput);
-    startContainer.appendChild(nicknameError);
-    startContainer.appendChild(playerSelectionContainer); 
-    startContainer.appendChild(startButton);
-    document.body.appendChild(startContainer);
+    };
 
     drawBackground(); 
 }
@@ -1139,8 +1120,7 @@ function updateStage3() {
         score += 1;
     }
 
-    // AQUI EU IRIA COLOCAR A LÓGICA DE VITÓRIA SE TIVESSE SIDO PEDIDA.
-    // POR ENQUANTO, DEIXO SEM CONDIÇÃO DE FIM DE JOGO NESSA FASE.
+    // Não há condição de vitória ou fim de jogo definida para Stage 3, conforme seu código original.
 }
 
 
@@ -1298,41 +1278,22 @@ function gameLoop() {
 async function showGameOver() {
     gameOverMusic.play(); // Inicia a música de game over
     hideTopButtons(); // Esconde os botões de informações
-    const gameOverScreen = document.createElement('div');
-    gameOverScreen.classList.add('overlay-screen', 'game-over-screen');
+    gameOverScreen.style.display = 'flex'; // Mostra a tela de Game Over
 
-    const gameOverTitle = document.createElement('h1');
-    gameOverTitle.textContent = 'GAME OVER!';
-    gameOverTitle.classList.add('game-over-title');
+    finalScoreText.textContent = `Pontuação Final: ${score}`; // Atualiza a pontuação final
 
-    const finalScoreText = document.createElement('p');
-    finalScoreText.textContent = `Pontuação Final: ${score}`;
-    finalScoreText.classList.add('final-score-text');
-
-    const restartButton = document.createElement('button');
-    restartButton.textContent = 'RESTART';
-    restartButton.classList.add('game-button', 'restart-button');
-    restartButton.addEventListener('click', () => {
+    // Event listener para o botão RESTART (agora no HTML)
+    restartButton.onclick = () => { // Usar onclick para evitar múltiplos listeners
         gameOverMusic.pause();
         gameOverMusic.currentTime = 0;
-        document.body.removeChild(gameOverScreen);
-        // Não chamo initGame() aqui, pois showStartScreen() já fará isso ou você pode ter outra lógica
+        gameOverScreen.style.display = 'none'; // Esconde a tela de Game Over
+        initGame(); // Reinicia o estado do jogo
         showStartScreen(); // Volta para a tela inicial
-    });
-
-    gameOverScreen.appendChild(gameOverTitle);
-    gameOverScreen.appendChild(finalScoreText);
-    gameOverScreen.appendChild(restartButton);
+    };
 
     // Seção de Ranking
-    const rankingTitle = document.createElement('h2');
-    rankingTitle.textContent = 'RANKING';
-    rankingTitle.classList.add('ranking-title');
-    gameOverScreen.appendChild(rankingTitle);
-
-    const rankingList = document.createElement('ul');
-    rankingList.classList.add('ranking-list');
-    gameOverScreen.appendChild(rankingList);
+    // Limpa a lista de ranking antes de preencher
+    rankingList.innerHTML = ''; 
 
     // Salvar e carregar ranking (supondo que você tem um backend para isso)
     await saveScore(playerNickname, score);
@@ -1350,8 +1311,6 @@ async function showGameOver() {
         noScoresItem.classList.add('no-scores');
         rankingList.appendChild(noScoresItem);
     }
-
-    document.body.appendChild(gameOverScreen);
 }
 
 
