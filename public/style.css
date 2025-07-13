@@ -281,10 +281,10 @@ canvas {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
     position: relative;
     width: 95%;
-    max-width: 1000px;
+    max-width: 1100px;
     text-align: center;
     color: #333; /* Cor de texto mais escura para contraste com o rosa */
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     line-height: 1.6;
     animation: fadeInScale 0.3s ease-out forwards; /* Animação ao aparecer */
 }
