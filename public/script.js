@@ -126,6 +126,7 @@ const bone_forrest = new Image();
 const bonezin_assets = [bone_forrest, bone_mst, bone_mubi];
 let bonezin = [];
 const collectSound2 = new Audio();
+let lastBonezinSpawnFrame = 0;
 
 
 
@@ -156,10 +157,7 @@ const st3platforms = [witch, hereditary, bodies, midsommar, talk,
     farol, bring, deer
 ];
 
-
-
 // SOURCES
-
 
 //stg1
 
@@ -259,7 +257,7 @@ let isShieldActive = false;
 let shieldTimer = 0; 
 const SHIELD_DURATION = 5 * 60; 
 let currentStage = 1;
-const STAGE_TRANSITION_SCORE = 10000;
+const STAGE_TRANSITION_SCORE = 500;
 const STAGE2_TRANSITION_SCORE = 17500;
 let showStageMessage = false;
 let stageMessageAlpha = 1.0;
@@ -543,6 +541,7 @@ function spawnShield() {
         y: 0,
         width: 70, 
         height: 70, 
+        image: imgShield,
     });
 }
 function spawnBonezin() {
@@ -640,58 +639,65 @@ function checkCollision(a, b, scale = 1) {
 ///////////////// U P D A T E S /////////////////
 ////////////////////////////////////////////////
 
-//########################################################
+//################################################//
 //### FUNÇÃO DE ATUALIZAÇÃO PARA A STAGE 1 /########/
-//########################################################
+//################################################//
 
 function updateStage1() {
 
     if (keys.left || isLeftTouched) {
-        player.vx = -speed; 
-    } 
-    else if (keys.right || isRightTouched) {
-        player.vx = speed; 
-    } else { 
+        player.vx = -speed;
+    } else if (keys.right || isRightTouched) {
+        player.vx = speed;
+    } else {
         player.vx = 0;
     }
 
+    // Lógica de pulo
     if ((keys.up || keys.space || isJumpTouched) && player.onGround) {
         player.vy = jumpStrength;
-        player.onGround = false;  
-        isJumpTouched = false;   
+        player.onGround = false;
+        isJumpTouched = false;
+        keys.up = false;
+        keys.space = false;
     }
 
-    player.vy += gravity;
-    player.y += player.vy;
-    player.x += player.vx;
+    player.x += player.vx; 
+    player.y += player.vy; 
+    player.vy += gravity; 
 
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-
-    if (player.y + player.height > canvas.height) {
+    if (player.y + player.height >= canvas.height) {
         player.y = canvas.height - player.height;
         player.vy = 0;
         player.onGround = true;
     }
 
-    if (!showStageMessage) { 
+    if (!showStageMessage) {
         // Lógica de spawn de Obstáculos (CLT)
+        // Spawna um novo obstáculo em intervalos regulares (baseado na obstacleSpawnRate)
         if (frame % Math.floor(60 / obstacleSpawnRate) === 0) {
             spawnObstacle();
         }
 
-        // Lógica de spawn de Shield
-        if (frame % (20 * 60) === 0 && !isShieldActive) { // Spawn a cada 20 segundos se não houver escudo ativo
+        // Lógica de spawn de Shield (Invulnerabilidade)
+        // Spawna um escudo em um intervalo de 20 segundos se não houver um escudo ativo
+        const SHIELD_SPAWN_INTERVAL = 20 * 60; // 20 segundos
+        if (frame % SHIELD_SPAWN_INTERVAL === 0 && !isShieldActive) {
             spawnShield();
         }
-        
-        // Lógica de spawn de Bonezin (MOVIDO PARA DENTRO DESTE BLOCO)
-        const BONEZIN_SPAWN_INTERVAL = 15 * 60; // Exemplo: spawna um bonezin a cada 15 segundos
-        if (frame % BONEZIN_SPAWN_INTERVAL === 0) { 
+
+        // Lógica de spawn de Bonezin (NOVO: item coletável de pontuação)
+        // Spawna um bonezin em um intervalo de 15 segundos
+        const BONEZIN_SPAWN_INTERVAL = 13 * 60; // 13 segundos
+        if (frame - lastBonezinSpawnFrame >= BONEZIN_SPAWN_INTERVAL) {
             spawnBonezin();
+            lastBonezinSpawnFrame = frame; // Atualiza o último frame de spawn
         }
 
         // Lógica de spawn de Slowdown (Absolute Cinema) baseada em tempo e probabilidade
+        // Garante que o item de slowdown apareça em momentos chave e depois por probabilidade
         if (!firstSlowdownGiven && frame >= initialDelay) {
             spawnSlowdown();
             firstSlowdownGiven = true;
@@ -701,11 +707,12 @@ function updateStage1() {
             secondSlowdownGiven = true;
             lastSlowdownTime = frame;
             currentProbWindowStart = frame; // Reinicia a janela de probabilidade
-            slowdownGivenInThisWindow = false;
+            slowdownGivenInThisWindow = false; // Permite um novo slowdown na nova janela
         } else {
+            // Se já passou do tempo inicial, tenta spawnar por probabilidade
             if (frame >= currentProbWindowStart + probPeriod) {
                 currentProbWindowStart = frame; // Avança a janela de probabilidade
-                slowdownGivenInThisWindow = false;
+                slowdownGivenInThisWindow = false; // Permite um novo slowdown na nova janela
             }
             if (!slowdownGivenInThisWindow && frame >= currentProbWindowStart) {
                 if (Math.random() < slowdownChance) {
@@ -717,84 +724,81 @@ function updateStage1() {
         }
 
         // Atualização da taxa de spawn e velocidade dos obstáculos
-        obstacleSpawnRate = 2 + 0.5 * Math.sqrt(frame / 180); // Aumenta a taxa de spawn
-        obstacleSpeed = Math.max(1, baseSpeed + growthFactor * Math.sqrt(frame / 60)); // Aumenta a velocidade
+        // Aumenta a dificuldade do jogo gradualmente
+        obstacleSpawnRate = 2 + 0.05 * Math.sqrt(frame / 180); // Aumenta a taxa de spawn
+        obstacleSpeed = Math.max(1, baseSpeed + 0.4 * Math.sqrt(frame / 60)); // Aumenta a velocidade
 
         // Iterar sobre Obstacles (CLT)
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let o = obstacles[i];
-            o.y += obstacleSpeed; // Move o obstáculo para baixo
-            if (checkCollision(player, o, 0.7)) { // Verifica colisão com o player
-                if (isShieldActive) { // Se o escudo estiver ativo, remove o obstáculo
+            o.y += obstacleSpeed;
+            if (checkCollision(player, o, 0.7)) { 
+                if (isShieldActive) { 
                     obstacles.splice(i, 1);
-                    scorePopups.push({ x: o.x + o.width / 2, y: o.y, alpha: 1.0, timer: 60, text: "Blocked" }); 
-                } else { // Caso contrário, Game Over
+                    scorePopups.push({ x: o.x + o.width / 2, y: o.y, alpha: 1.0, timer: 60, text: "Blocked" });
+                } else {
                     gameOver = true;
                     bgMusic.pause();
-                    showGameOver();
-                    return; // Sai da função para parar o jogo
+                    showGameOver(); 
+                    return; 
                 }
             }
-            if (o.y > canvas.height) { // Remove o obstáculo se sair da tela
+            if (o.y > canvas.height) { 
                 obstacles.splice(i, 1);
             }
         }
 
-        // Iterar sobre Slowdown Items (Absolute Cinema)
+        // Iterar sobre Slowdown Items (Absolute Cinema): move, verifica colisão e remove
         for (let i = slowdownItems.length - 1; i >= 0; i--) {
             let item = slowdownItems[i];
-            item.y += 2;
-            if (checkCollision(player, item, 1)) { // Verifica colisão com o player
-                obstacleSpeed = Math.max(1, obstacleSpeed * 0.90); // Diminui a velocidade em 10%
-                score += buff_score; 
-                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: `+${buff_score}` }); 
-                slowdownItems.splice(i, 1); // Remove o item
-                buffsCollected++;
-                collectSound.play();
+            item.y += 2; 
+            if (checkCollision(player, item, 1)) { 
+                obstacleSpeed = Math.max(1, obstacleSpeed * 0.88); /// reduz a velocidade
+                score += buff_score; // Adiciona pontos
+                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: `+${buff_score}` });
+                slowdownItems.splice(i, 1); 
+                buffsCollected++; 
+                collectSound.play(); 
             }
-            if (item.y > canvas.height) { // Remove o item se sair da tela
+            if (item.y > canvas.height) { 
                 slowdownItems.splice(i, 1);
             }
         }
 
-        // Iterar sobre Shield Items
+        // Iterar sobre Shield Items: move, verifica colisão e remove
         for (let i = shieldItems.length - 1; i >= 0; i--) {
             let item = shieldItems[i];
-            item.y += 2; // Move o item para baixo
+            item.y += 2;
 
-            if (checkCollision(player, item, 1)) { // Verifica colisão com o player
-                isShieldActive = true; // Ativa o escudo
-                shieldTimer = SHIELD_DURATION; // Define a duração do escudo
-                shieldItems.splice(i, 1); // Remove o item
-                shieldSound.play(); // Toca o som do escudo
-                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: "Invulnerable!" }); 
+            if (checkCollision(player, item, 1)) { 
+                isShieldActive = true; 
+                shieldTimer = SHIELD_DURATION; 
+                shieldItems.splice(i, 1); 
+                shieldSound.play(); 
+                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: "Invulnerable!" });
             }
 
-            if (item.y > canvas.height) { // Remove o item se sair da tela
-                shieldItems.splice(i, 1); 
+            if (item.y > canvas.height) { 
+                shieldItems.splice(i, 1);
             }
         }
 
-        // Iterar sobre Bonezins
         for (let i = bonezin.length - 1; i >= 0; i--) {
             let item = bonezin[i];
-            item.y += 2; // Move o bonezin para baixo
-            
+            item.y += 2; 
             if (checkCollision(player, item, 1)) {
                 score += 50; 
-                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text:'50!' }); 
+                scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: '50!' });
                 bonezin.splice(i, 1); 
                 collectSound2.play(); 
             }
-            
-            // Remove o bonezin se ele sair da tela por baixo
+
             if (item.y > canvas.height) {
                 bonezin.splice(i, 1);
             }
         }
-    }
+    } 
 
-    // 3. Lógica do Shield Timer
     if (isShieldActive) {
         shieldTimer--;
         if (shieldTimer <= 0) {
@@ -802,7 +806,6 @@ function updateStage1() {
         }
     }
 
-    // 4. Lógica da Mensagem de Transição
     if (showStageMessage) {
         stageMessageTimer--;
         if (stageMessageTimer <= 0) {
@@ -810,38 +813,31 @@ function updateStage1() {
         }
     }
 
-    // 5. Lógica de Transição de Fase
     if (score >= STAGE_TRANSITION_SCORE && currentStage === 1) {
-        currentStage = 2;
-        showStageMessage = true;
+        currentStage = 2; 
+        showStageMessage = true; 
         stageMessageTimer = STAGE_MESSAGE_DURATION; 
-        
-        // Limpar elementos da Stage 1
+
         obstacles = [];
         slowdownItems = [];
         isShieldActive = false;
-        shieldItems = []; 
-        bonezin = []; // Limpa os bonezins também
+        shieldItems = [];
+        bonezin = []; 
 
-        // Resetar player para a Stage 2
-        player.x = canvas.width / 4; 
+        player.x = canvas.width / 4;
         player.vy = 0;
-        player.vx = 0; 
+        player.vx = 0;
         player.onGround = true;
-        
-        // VILÃO INICIA NA EXTREMA ESQUERDA E NO CHÃO NA TRANSIÇÃO DA STAGE 2**
-        villain.x = -villain.width;
-        villain.y = canvas.height - villain.height; 
 
-        // Parar música da Stage 1 e iniciar da Stage 2
+        villain.x = -villain.width;
+        villain.y = canvas.height - villain.height;
+
         bgMusic.pause();
-        bgMusic.currentTime = 0;
+        bgMusic.currentTime = 0; 
         bgMusicSt2.play().catch(error => {
             console.error("Erro ao iniciar música da Stage 2:", error);
         });
     }
-
-    frame++; 
 }
 
 //################################################//
@@ -849,6 +845,7 @@ function updateStage1() {
 //################################################//
 
 function updateStage2() {
+    frame++;
 
     if (keys.left || isLeftTouched) {
         player.vx = -speed; 
@@ -864,7 +861,7 @@ function updateStage2() {
     // Mover o fundo para dar a impressão de corrida contínua 
 
     if (!showStageMessage) { 
-        backgroundSt2X -= backgroundScrollSpeed + 0.65 * Math.sqrt(frame / 60);;
+        backgroundSt2X -= backgroundScrollSpeed + 0.1 * Math.sqrt(frame / 60);;
         if (backgroundSt2X <= -canvas.width) {
             backgroundSt2X += canvas.width; 
         }
@@ -1052,6 +1049,7 @@ async function showGameOver() {
     shieldItems = []; 
     stage2Obstacles = [];
     stage2Collectibles = [];
+    shieldItems = [];
 
     if (playerNickname && score > 0) {
         try {
@@ -1145,6 +1143,9 @@ function draw() {
             ctx.fillStyle = 'blue';
             ctx.fillRect(player.x, player.y, player.width, player.height);
         }
+    shieldItems.forEach(item => {
+        ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
+    });
 
         if (isShieldActive) {
             ctx.save(); 
@@ -1170,6 +1171,7 @@ function draw() {
             ctx.fillStyle = "rgba(0, 255, 0, 0.9)";
             ctx.fillRect(player.x, player.y + player.height + 8, player.width * (shieldTimer / SHIELD_DURATION), 5);
         }
+
                 ///// STAGE 1 /////
         if (currentStage === 1) {
             for (let o of obstacles) {
