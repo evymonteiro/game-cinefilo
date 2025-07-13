@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const uri = process.env.MONGODB_URI;
 
 const ScoreSchema = new mongoose.Schema({
-  nickname: { type: String, required: true, maxlength: 6 },
+  nickname: { type: String, required: true, maxlength: 8 },
   score: { type: Number, required: true },
   date: { type: Date, default: Date.now }
 });
