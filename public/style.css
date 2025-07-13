@@ -71,7 +71,7 @@ canvas {
 }
 
 .ranking-title {
-    color: #070707;
+    color: #9b0404;
     margin-top: 1rem;
     margin-bottom: 1rem;
     font-size: 1.8rem;
@@ -145,26 +145,26 @@ canvas {
 .final-score-text {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: black;
+    color: #9b0404;
 }
 
 .ranking-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    color: black;
+    color: #9b0404;
     text-align: center;
 }
 
 .ranking-list li {
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
-    color: #0c0c0c; 
+    color:#9b0404;
 }
 
 .ranking-list .no-scores { 
     font-size: 1.2rem;
-    color: #070707;
+    color:#9b0404;
 }
 
 .player-selection-container {
