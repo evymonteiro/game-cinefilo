@@ -269,7 +269,7 @@ canvas {
     max-width: 700px;
     text-align: center;
     color: #333;
-    font-size: 0.8rem;
+    font-size: 0.65rem;
     line-height: 1.6;
     animation: fadeInScale 0.3s ease-out forwards;
 }
