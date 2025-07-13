@@ -246,7 +246,7 @@ let villainSpeed = 0.002;
 let obstacles = [];
 let slowdownItems = [];
 let shieldItems = []; 
-let obstacleSpeed = 2; 
+let obstacleSpeed = 2.5; 
 let frame = 0;
 let score = 0;
 let gameOver = false;
@@ -727,7 +727,7 @@ function updateStage1() {
         // Atualização da taxa de spawn e velocidade dos obstáculos
         // Aumenta a dificuldade do jogo gradualmente
         obstacleSpawnRate = 2 + 0.05 * Math.sqrt(frame / 180); // Aumenta a taxa de spawn
-        obstacleSpeed = Math.max(1, baseSpeed + 0.4 * Math.sqrt(frame / 60)); // Aumenta a velocidade
+        obstacleSpeed = Math.max(1, 2.5 + 0.2 * Math.sqrt(frame / 60)); // Aumenta a velocidade
 
         // Iterar sobre Obstacles (CLT)
         for (let i = obstacles.length - 1; i >= 0; i--) {
