@@ -1,26 +1,31 @@
 /* style.css */
 
-body {
+html, body {
     margin: 0;
+    padding: 0;
+    height: 100%;
     background-color: #111;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    color: white; 
-     overflow: hidden;
+    color: white;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 100vh;
+    align-items: center;
+    justify-content: space-between;
 }
 
 canvas {
+    width: 100vw;
+    height: auto;
+    max-width: 1100px;
+    max-height: calc(100vh - 160px); 
     background-color: #222;
     border: 2px solid #fff;
-    width: 100vw;
-    height: 100vh;
-    max-width: 1100px;
-    max-height: 700px;
 }
-
 .overlay-screen {
     position: fixed;
     top: 0;
@@ -315,16 +320,46 @@ canvas {
     }
 }
 
-.touch-controls-container {
-    display: flex;
-    justify-content: center; /* centraliza os botões horizontalmente */
-    gap: 30px;               /* espaço entre todos os botões */
-    margin-top: 40px;        /* distância do canvas */
-    width: 100%;
-    position: relative;      /* padrão para não sobrepor */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #111;
+    font-family: 'Press Start 2P', cursive, sans-serif;
+    color: white;
 }
 
-/* Botões individuais */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-height: 100vh;
+    align-items: center;
+    justify-content: space-between;
+}
+
+canvas {
+    width: 100vw;
+    height: auto;
+    max-width: 1100px;
+    max-height: calc(100vh - 160px); /* deixa espaço para os botões */
+    background-color: #222;
+    border: 2px solid #fff;
+}
+
+/* BOTÕES DE TOQUE FIXADOS EMBAIXO */
+.touch-controls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 0;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #111;
+}
+
+/* Botões individuais */
 .touch-button {
     background-color: rgba(50, 50, 50, 0.7);
     border: 2px solid rgba(255, 255, 255, 0.5);
@@ -335,11 +370,23 @@ canvas {
     justify-content: center;
     align-items: center;
     border-radius: 10px;
+    width: 90px;
+    height: 90px;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     cursor: pointer;
-    transition: background-color 0.1s ease, border-color 0.1s ease;
+    transition: background-color 0.1s ease;
 }
+
+/* Botão PULAR */
+.jump-button {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: rgba(100, 100, 200, 0.7);
+}
+
+
 
 /* Tamanho dos botões ESQ e DIR */
 #leftBtn, #rightBtn {
@@ -347,13 +394,6 @@ canvas {
     height: 90px;
 }
 
-/* Botão PULAR maior e redondo */
-.jump-button {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    background-color: rgba(100, 100, 200, 0.7);
-}
 
 /* Efeito de botão pressionado */
 .touch-button.active {
