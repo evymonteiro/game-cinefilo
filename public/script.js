@@ -644,6 +644,7 @@ function checkCollision(a, b, scale = 1) {
 //################################################//
 
 function updateStage1() {
+    frame++;
 
     if (keys.left || isLeftTouched) {
         player.vx = -speed;
@@ -753,7 +754,7 @@ function updateStage1() {
             let item = slowdownItems[i];
             item.y += 2; 
             if (checkCollision(player, item, 1)) { 
-                obstacleSpeed = Math.max(1, obstacleSpeed * 0.88); /// reduz a velocidade
+                obstacleSpeed = Math.max(1, obstacleSpeed * 0.91); /// reduz a velocidade
                 score += buff_score; // Adiciona pontos
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: `+${buff_score}` });
                 slowdownItems.splice(i, 1); 
@@ -787,7 +788,7 @@ function updateStage1() {
             let item = bonezin[i];
             item.y += 2; 
             if (checkCollision(player, item, 1)) {
-                score += 50; 
+                score += 75; 
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: '50!' });
                 bonezin.splice(i, 1); 
                 collectSound2.play(); 
