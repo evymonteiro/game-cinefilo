@@ -1,3 +1,5 @@
+Disponível em: https://game-cinefilo.vercel.app/
+
 Bem vindo(a), espero que você se divirta jogando o quanto eu me diverti desenvolvendo ❤️.
 
 INSTRUÇÕES:
