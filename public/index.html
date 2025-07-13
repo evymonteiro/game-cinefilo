@@ -2,36 +2,59 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- Ajuste crucial para mobile: permite zoom e scroll padrão do navegador -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trabalhar não dá review no letterboxd.</title>
+    <!-- Link para a fonte pixel art -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Link para o seu arquivo CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- As telas de overlay (início, game over, modais) e os botões superiores
+         devem estar FORA do #game-wrapper, pois eles cobrem a tela inteira com position: fixed. -->
+
+    <!-- Top Buttons Container (Instruções, Sobre) -->
     <div class="top-buttons-container">
         <button id="instructionsBtn" class="info-button">INSTRUÇÕES:</button>
         <button id="aboutBtn" class="info-button">SOBRE:</button>
     </div>
 
-    <div id="game-wrapper"> 
-        <canvas id="gameCanvas" width="1100" height="700"></canvas>
-
-        <div id="touchControls" class="touch-controls-container">
-            <div class="touch-left-right-group">
-                <div id="leftBtn" class="touch-button">ESQ</div>
-                <div id="rightBtn" class="touch-button">DIR</div>
+    <!-- Tela Inicial (Overlay) -->
+    <div id="startScreen" class="overlay-screen start-container">
+        <h1 class="game-title">TRABALHAR NÃO DÁ REVIEW NO LETTERBOXD</h1>
+        <input type="text" id="nicknameInput" class="nickname-input" placeholder="Nickname">
+        <p id="nicknameError" class="nickname-error" style="display: none;"></p>
+        
+        <div class="player-selection-container">
+            <h2 class="player-selection-title">Escolha seu personagem:</h2>
+            <div class="player-images-container" id="playerImagesContainer">
+                <!-- As imagens dos personagens serão inseridas aqui via JavaScript -->
             </div>
-            <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
         </div>
+        
+        <button id="startButton" class="game-button">START!</button>
     </div>
 
+    <!-- Tela de Game Over (Overlay) -->
+    <div id="gameOverScreen" class="overlay-screen game-over-screen" style="display: none;">
+        <h1 class="game-over-title">GAME OVER!</h1>
+        <p id="finalScoreText" class="final-score-text">Pontuação Final: 0</p>
+        <h2 class="ranking-title">RANKING</h2>
+        <ul id="rankingList" class="ranking-list">
+            <!-- O ranking será inserido aqui via JavaScript -->
+        </ul>
+        <button id="restartButton" class="game-button restart-button">RESTART</button>
+    </div>
+
+    <!-- Modal de Instruções -->
     <div id="instructionsModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeInstructions">&times;</span>
             <h2>INSTRUÇÕES:</h2>
             <p>
                 Utilize as setas direita e esquerda do teclado para mover o personagem, pule com seta para cima
-                ou espaço.
+                ou espaço. 
             </p>
             <p>
                 Desvie dos obstáculos do mundo coorporativo, fuja da contratação e colete os itens para garantir
@@ -42,6 +65,7 @@
         </div>
     </div>
 
+    <!-- Modal Sobre -->
     <div id="aboutModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeAbout">&times;</span>
@@ -51,46 +75,61 @@
             </p>
             <p>
                 Este jogo foi criado com o objetivo de brincar e satirizar com a comunidade
-                cinéfila, não tem nenhum objetivo de criticar os direitos garantidos e
+                cinéfila, não tem nenhum objetivo de criticar os direitos garantidos e 
                 consolidados com as Leis do Trabalho.<br>
                 Que o bom humor seja sempre uma ferramenta para suportar qualquer opressão
-                pela esperança de dias melhores.
+                pela esperança de dias melhores. 
             </p>
             <p>
-                P.s: Fim da escala 6X1.
+                P.s: Fim da escala 6X1. 
             </p>
             <p>
                 Disponível no Github: <a href="https://github.com/evymonteiro/game-cinefilo" target="_blank">Link do Repositório</a>
             </p>
             <p>As artes utilizadas foram geradas com a IA Gemini.</p>
             <p>
-                Trilha Sonora:<br>
-                Stage 1: Max Richter - The Nature of Daylight.<br>
-                Stage 2: Trent Reznor & Atticus Ross - Challengers: Match Point<br>
-                Stage 3: Main Titles (MTG RUPTURA SEVERANCE BAILE FUNK) · MULUBEATS · BRUSA FUNK &#8471; 2025 Vamonos Music<br>
-                Game Over: Killer Queen Requiem - Jojo Bizarre Adventure Ost. <br>
-
+            Trilha Sonora:<br>
+            Stage 1: Max Richter - The Nature of Daylight.<br>
+            Stage 2: Trent Reznor & Atticus Ross - Challengers: Match Point<br>
+            Stage 3: Main Titles (MTG RUPTURA SEVERANCE BAILE FUNK) · MULUBEATS · BRUSA FUNK &#8471; 2025 Vamonos Music<br>
+            Game Over: Killer Queen Requiem - Jojo Bizarre Adventure Ost. <br>
             </p>
             <p>
                 Agradecimentos:<br>
                 Sarah Tenório
             </p>
             <p>Inspirações:<br>
-                <a href="https://instagram.com/wolverinerasta" target="_blank">@wolverinerasta</a> <br>
-                <a href="https://instagram.com/hulkcinefilo" target="_blank">@hulkcinefilo</a> <br>
+              <a href="https://instagram.com/wolverinerasta" target="_blank">@wolverinerasta</a> <br>
+              <a href="https://instagram.com/hulkcinefilo" target="_blank">@hulkcinefilo</a> <br>
             </p>
             <p>
-                Tecnologias utilizadas: JavaScript, css e HTML para o desenvolvimento, MongoDB e Vercel
+                Tecnologias utilizadas: JavaScript, css e HTML para o desenvolvimento, MongoDB e Vercel 
                 para o banco de dados e backend. <br>
-                IA Gemini para melhoria e auxílio do código fonte.
+                IA Gemini para melhoria e auxílio do código fonte. 
             </p>
             <p>
-                Desenvolvido por Évelyn Muniz, 2025.
+                Desenvolvido por Évelyn Muniz, 2025.  
                 Contato: evymuniz95@ufrrj.br
             </p>
         </div>
     </div>
 
+    <!-- NOVO: O CONTÊINER PRINCIPAL PARA O JOGO E OS BOTÕES DE TOQUE -->
+    <!-- Este div irá agrupar o canvas e os controles para que o CSS possa posicioná-los juntos. -->
+    <div id="game-wrapper"> 
+        <canvas id="gameCanvas" width="1100" height="700"></canvas>
+
+        <!-- Botões de controle de toque (aparecem apenas em dispositivos touch) -->
+        <div id="touchControls" class="touch-controls-container">
+            <div class="touch-left-right-group">
+                <div id="leftBtn" class="touch-button">ESQ</div>
+                <div id="rightBtn" class="touch-button">DIR</div>
+            </div>
+            <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
+        </div>
+    </div>
+
+    <!-- Seu arquivo JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
