@@ -314,15 +314,14 @@ canvas {
         opacity: 1;
         transform: scale(1);
     }
-}
-
+    
 .touch-controls-container {
-    display: flex;
-    justify-content: center; /* centraliza os botões horizontalmente */
-    gap: 30px;               /* espaço entre todos os botões */
-    margin-top: 40px;        /* distância do canvas */
-    width: 100%;
-    position: relative;      /* padrão para não sobrepor */
+    display: flex;
+    justify-content: center; /* centraliza horizontalmente */
+    align-items: center;
+    gap: 60px;               /* mais espaço entre os botões */
+    margin-top: 40px;
+    width: 100%;
 }
 
 /* Botões individuais */
