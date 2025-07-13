@@ -1,6 +1,32 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
+function isTouchDevice() {
+  return (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0
+  );
+}
+
+function toggleTouchControls() {
+  const touchControls = document.getElementById('touchControls');
+  if (!touchControls) return; // evita erro se elemento não existir
+
+  if (isTouchDevice()) {
+    touchControls.style.display = 'flex';
+  } else {
+    touchControls.style.display = 'none';
+  }
+}
+
+// Roda ao carregar a página
+window.addEventListener('load', toggleTouchControls);
+
+// Roda ao redimensionar a janela (opcional, mas útil)
+window.addEventListener('resize', toggleTouchControls);
+
+
 // CRIAÇÃO DE BOTÕES VIRTUAIS PARA USO EM TOUCHSCREEN:
 
 // Referências aos botões:
