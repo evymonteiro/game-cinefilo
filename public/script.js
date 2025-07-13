@@ -257,7 +257,7 @@ let isShieldActive = false;
 let shieldTimer = 0; 
 const SHIELD_DURATION = 5 * 60; 
 let currentStage = 1;
-const STAGE_TRANSITION_SCORE = 500;
+const STAGE_TRANSITION_SCORE = 10000;
 const STAGE2_TRANSITION_SCORE = 17500;
 let showStageMessage = false;
 let stageMessageAlpha = 1.0;
@@ -523,24 +523,24 @@ document.addEventListener("keyup", (e) => {
     obstacles.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 50,
-        height: 50,
+        width: 55,
+        height: 55,
     });
 }
 function spawnSlowdown() {
     slowdownItems.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 70,
-        height: 70,
+        width: 100,
+        height: 100,
     });
 }
 function spawnShield() {
     shieldItems.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 70, 
-        height: 70, 
+        width: 80, 
+        height: 80, 
         image: imgShield,
     });
 }
@@ -550,8 +550,8 @@ function spawnBonezin() {
     bonezin.push({
         x: Math.random() * (canvas.width - 70), 
         y: -70, 
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         image: chosenImage
     });
 }
