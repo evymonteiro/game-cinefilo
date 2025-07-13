@@ -1319,21 +1319,3 @@ function gameLoop() {
         requestAnimationFrame(gameLoop);
     }
 }
-
-function ajustarEscalaCanvas() {
-    const canvas = document.getElementById('gameCanvas');
-    const larguraOriginal = canvas.width;
-    const alturaOriginal = canvas.height;
-
-    const escala = Math.min(
-        window.innerWidth / larguraOriginal,
-        window.innerHeight / alturaOriginal
-    );
-
-    canvas.style.transform = `scale(${escala})`;
-    canvas.style.transformOrigin = 'top left';
-}
-
-window.addEventListener('resize', ajustarEscalaCanvas);
-ajustarEscalaCanvas();
-
