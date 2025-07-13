@@ -523,16 +523,16 @@ document.addEventListener("keyup", (e) => {
     obstacles.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 55,
-        height: 55,
+        width: 60,
+        height: 60,
     });
 }
 function spawnSlowdown() {
     slowdownItems.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 100,
-        height: 100,
+        width: 90,
+        height: 90,
     });
 }
 function spawnShield() {
