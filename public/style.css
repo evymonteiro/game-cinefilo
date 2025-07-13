@@ -1,27 +1,30 @@
 /* style.css */
 
-body {
-  min-height: 100vh; /* ou simplesmente remova height fixa */
+html, body {
+  height: auto; /* não fixa altura */
+  min-height: 100vh; /* garante que a tela ocupe no mínimo a altura da viewport */
   margin: 0;
+  padding: 0;
   background-color: #111;
   font-family: 'Press Start 2P', cursive, sans-serif;
   color: white;
   display: flex;
-  flex-direction: column;  /* para o layout ficar vertical */
-  align-items: center;     /* centraliza horizontalmente */
+  flex-direction: column; /* empilha verticalmente */
+  align-items: center; /* centraliza horizontalmente */
 }
 
 
 canvas {
-  width: 100vw;        /* largura da viewport */
-  max-width: 1100px;   /* limita a largura máxima */
-  height: auto;        /* ajusta a altura proporcionalmente */
-  max-height: 700px;   /* limita a altura máxima */
   background-color: #222;
   border: 2px solid #fff;
-  display: block;      /* remove espaços em branco abaixo */
-  margin: 0 auto;      /* centraliza horizontalmente */
+  width: 100vw;      /* largura total da viewport */
+  max-width: 1100px; /* limite máximo de largura */
+  height: auto;      /* ajusta a altura proporcional */
+  max-height: 700px; /* limite máximo de altura */
+  display: block;
+  margin: 20px 0 0 0; /* espaçamento acima para separar do topo */
 }
+
 
 .overlay-screen {
     position: fixed;
