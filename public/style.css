@@ -1,16 +1,19 @@
 /* style.css */
 
-
 body {
     margin: 0;
+    padding: 0;
     background-color: #111;
     display: flex;
-    flex-direction: column;        /* permite empilhar verticalmente */
-    align-items: center;
+    flex-direction: column;        /* coloca canvas e botões em coluna */
+    align-items: center;           /* centraliza horizontalmente */
     font-family: 'Press Start 2P', cursive, sans-serif;
     color: white;
-    overflow-x: hidden;            /* permite rolar para baixo se necessário */
+    overflow-x: hidden;            /* evita scroll horizontal */
+    /* NÃO usar height: 100vh nem justify-content */
 }
+
+
 
 canvas {
     width: 100%;
@@ -315,16 +318,18 @@ canvas {
         transform: scale(1);
     }
     
+/* Container dos botões touch */
 .touch-controls-container {
-    display: flex;
-    justify-content: center; /* centraliza horizontalmente */
-    align-items: center;
-    gap: 60px;               /* mais espaço entre os botões */
-    margin-top: 40px;
-    width: 100%;
+    display: flex;
+    justify-content: center;  /* Centraliza horizontalmente */
+    align-items: center;      /* Alinha verticalmente */
+    gap: 60px;                /* Espaçamento entre os botões */
+    margin-top: 40px;         /* Distância do canvas */
+    width: 100%;
+    flex-wrap: wrap;          /* Permite quebrar linha em telas pequenas */
 }
 
-/* Botões individuais */
+/* Estilo base para todos os botões */
 .touch-button {
     background-color: rgba(50, 50, 50, 0.7);
     border: 2px solid rgba(255, 255, 255, 0.5);
@@ -341,13 +346,13 @@ canvas {
     transition: background-color 0.1s ease, border-color 0.1s ease;
 }
 
-/* Tamanho dos botões ESQ e DIR */
+/* Tamanho para os botões esquerda e direita */
 #leftBtn, #rightBtn {
     width: 90px;
     height: 90px;
 }
 
-/* Botão PULAR maior e redondo */
+/* Botão de pulo – redondo e maior */
 .jump-button {
     width: 120px;
     height: 120px;
@@ -355,7 +360,7 @@ canvas {
     background-color: rgba(100, 100, 200, 0.7);
 }
 
-/* Efeito de botão pressionado */
+/* Efeito visual ao pressionar */
 .touch-button.active {
     background-color: rgba(0, 255, 0, 0.7);
     border-color: #0f0;
