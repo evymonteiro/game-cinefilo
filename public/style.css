@@ -1,26 +1,29 @@
 /* style.css */
-
-body {
+html, body {
     margin: 0;
-    background-color: #111;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden; /* Evita scroll horizontal */
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    flex-direction: column;
+    align-items: center; /* Centraliza conteúdo horizontalmente */
+    background-color: #111;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    color: white; 
-     overflow: hidden;
+    color: white;
 }
 
+/* Canvas responsivo e centralizado */
 canvas {
     background-color: #222;
     border: 2px solid #fff;
-    width: 100vw;
-    height: 100vh;
-    max-width: 1100px;
-    max-height: 700px;
+    width: 100vw;         /* Ocupa toda largura da viewport */
+    max-width: 1100px;    /* Limite máximo */
+    height: auto;         /* Mantém proporção */
+    max-height: 700px;    /* Limite máximo de altura */
+    display: block;       /* Remove espaços em branco abaixo */
+    margin: 0 auto;       /* Centraliza */
 }
-
 .overlay-screen {
     position: fixed;
     top: 0;
@@ -315,18 +318,19 @@ canvas {
     }
 }
 
+/* Container dos botões de toque abaixo do canvas */
 .touch-controls-container {
     display: flex;
-    justify-content: center; /* centraliza os botões horizontalmente */
-    align-items: center;     /* alinha verticalmente */
-    gap: 30px;               /* espaço entre todos os botões */
+    justify-content: center; /* centraliza os botões */
+    align-items: center;     /* alinhamento vertical */
+    gap: 30px;               /* espaçamento entre os botões */
     margin-top: 20px;        /* distância do canvas */
     width: 100%;
-    position: relative;      /* padrão para não sobrepor */
+    max-width: 1100px;       /* mesma largura máxima do canvas */
+    box-sizing: border-box;
+    padding: 0 20px;         /* um pouco de padding lateral */
+    position: relative;      /* para não sobrepor */
 }
-
-/* Removendo o estilo da div que agrupava os botões ESQ e DIR,
-   pois não é necessário mais. Se quiser pode remover essa div no HTML */
 
 /* Botões individuais */
 .touch-button {
@@ -359,7 +363,7 @@ canvas {
     background-color: rgba(100, 100, 200, 0.7);
 }
 
-/* Efeito de botão pressionado */
+/* Botão pressionado */
 .touch-button.active {
     background-color: rgba(0, 255, 0, 0.7);
     border-color: #0f0;
