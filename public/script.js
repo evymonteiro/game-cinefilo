@@ -704,7 +704,7 @@ function updateStage1() {
         }
     }
 
-     const BONEZIN_SPAWN_INTERVAL = 15 * 60;
+     const BONEZIN_SPAWN_INTERVAL = 10 * 60;
         if (frame % BONEZIN_SPAWN_INTERVAL === 0) { 
             spawnBonezin();
         }
@@ -733,7 +733,7 @@ function updateStage1() {
             let item = slowdownItems[i];
             item.y += 2; 
             if (checkCollision(player, item, 1)) {
-                obstacleSpeed = Math.max(1, obstacleSpeed * 1);
+                obstacleSpeed = Math.max(1, obstacleSpeed * 0.85);
                 score += buff_score; 
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: `+${buff_score}` }); 
                 slowdownItems.splice(i, 1);
