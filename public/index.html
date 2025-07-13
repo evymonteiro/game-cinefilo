@@ -8,17 +8,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="main-container">
+    <div class="top-buttons-container">
+        <button id="instructionsBtn" class="info-button">INSTRUÇÕES:</button>
+        <button id="aboutBtn" class="info-button">SOBRE:</button>
+    </div>
     <canvas id="gameCanvas" width="900" height="600"></canvas>
 
     <div id="touchControls" class="touch-controls-container">
-      <div id="leftBtn" class="touch-button">ESQ</div>
-      <div id="rightBtn" class="touch-button">DIR</div>
-      <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
+        <div class="touch-left-right-group"> <div id="leftBtn" class="touch-button">ESQ</div>
+            <div id="rightBtn" class="touch-button">DIR</div>
+        </div>
+        <div id="jumpBtn" class="touch-button jump-button">PULAR</div>
     </div>
-  </div>
-</body>
-
     <div id="instructionsModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-button" id="closeInstructions">&times;</span>
