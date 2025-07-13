@@ -6,28 +6,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* Remover height: 100vh; e width: 100%; para permitir que o body se ajuste ao conteúdo,
-       especialmente em telas pequenas e com scroll.
-       A altura total da tela será gerenciada pelo .overlay-screen. */
+    height: 100vh;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    color: white;
-    /* Importante para mobile: */
-    -webkit-text-size-adjust: 100%; /* Evita que o iOS ajuste o tamanho da fonte */
-    box-sizing: border-box; /* Garante que padding e border não aumentem o tamanho dos elementos */
+    color: white; /* Cor de texto padrão para o corpo, pode ser sobrescrita por seletores mais específicos */
 }
 
-/* O canvas será responsivo, mas manterá proporções e será centralizado */
 canvas {
     background-color: #222;
     border: 2px solid #fff;
-    /* Ajustado para ser responsivo, mantendo a proporção 1100x700 */
-    max-width: 100vw; /* Garante que o canvas não transborde a largura da viewport */
-    max-height: 100vh; /* Garante que o canvas não transborde a altura da viewport */
-    width: auto; /* Permite que a largura seja calculada automaticamente */
-    height: auto; /* Permite que a altura seja calculada automaticamente */
-    display: block; /* Remove o espaço extra abaixo do canvas */
-    margin: auto; /* Centraliza o canvas */
-    object-fit: contain; /* Garante que o conteúdo se ajuste dentro do contêiner, útil se for uma imagem de fundo para o canvas */
+    width: 1100px; /* Corrigido para 1000px, conforme seu HTML */
+    height: 700px; /* Corrigido para 700px, conforme seu HTML */
 }
 
 /* Estilos para as telas de sobreposição (start e game over) */
@@ -42,12 +30,6 @@ canvas {
     justify-content: center;
     align-items: center;
     z-index: 100;
-    /* NOVO: Permite scroll vertical se o conteúdo exceder a altura da tela */
-    overflow-y: auto; 
-    /* NOVO: Melhora o desempenho de scroll em dispositivos iOS */
-    -webkit-overflow-scrolling: touch; 
-    padding: 20px; /* Adiciona um padding geral para evitar que o conteúdo toque as bordas */
-    box-sizing: border-box; /* Garante que o padding não adicione à largura/altura total */
 }
 
 /* Estilos específicos para o container de start */
@@ -62,13 +44,6 @@ canvas {
     justify-content: center;
     align-items: center;
     z-index: 100;
-    width: 100%; /* Garante que o background ocupe toda a largura */
-    height: 100%; /* Garante que o background ocupe toda a altura */
-    /* NOVO: Permite scroll interno se o conteúdo for maior que a tela disponível */
-    overflow-y: auto; 
-    -webkit-overflow-scrolling: touch;
-    padding: 20px; /* Para garantir que o conteúdo tenha espaço dentro do background */
-    box-sizing: border-box;
 }
 
 /* Estilos específicos para o container de game over */
@@ -80,7 +55,7 @@ canvas {
 /* Estilos para títulos (h1, h2) */
 .game-title { /* Para o H1 da tela inicial */
     color: #fefefe;
-    font-size: clamp(1.5rem, 5vw, 3rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 2rem; 
     text-shadow: 0 0 10px rgba(82, 5, 5, 0.8);
     margin-bottom: 2rem;
     letter-spacing: 2px;
@@ -88,7 +63,7 @@ canvas {
 }
 
 .game-over-title { /* Para o H1 da tela de game over */
-    font-size: clamp(2.5rem, 8vw, 4rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 4rem;
     color: #9b0404;
     text-shadow: 0 0 10px rgb(169, 9, 9);
     margin-bottom: 1rem;
@@ -98,48 +73,46 @@ canvas {
     color: #070707;
     margin-top: 1rem;
     margin-bottom: 1rem;
-    font-size: clamp(1.4rem, 4vw, 2rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 1.8rem;
     text-shadow: 0 0 8px rgba(82, 5, 5, 0.8);
 }
 
 /* Estilos para o input de nickname */
 .nickname-input {
-    padding: 15px; /* Aumentado o padding para facilitar o toque */
-    font-size: clamp(1rem, 4vw, 1.5rem); /* NOVO: Tamanho de fonte responsivo */
+    padding: 10px;
+    font-size: 1.2rem;
     margin-bottom: 1.5rem;
     border: 4px solid #e2dfdf;
     border-radius: 5px;
     text-align: center;
     text-transform: uppercase;
-    width: 90%; /* NOVO: Largura responsiva */
-    max-width: 300px; /* NOVO: Largura máxima para desktops */
-    background-color: rgba(242, 232, 232, 0.1);
-    color: white;
+    width: 250px;
+    background-color: rgba(242, 232, 232, 0.1); /* Um leve fundo translúcido para o input */
+    color: white; /* Cor do texto digitado no input */
     font-family: 'Press Start 2P', cursive, sans-serif;
-    box-sizing: border-box; /* Inclui padding e border na largura total */
 }
-
+/* Estilo para o placeholder do input (requer a declaração de font-family explicitamente) */
 .nickname-input::placeholder {
     color: rgba(248, 245, 245, 0.7);
-    font-family: 'Press Start 2P', cursive, sans-serif;
+    font-family: 'Press Start 2P', cursive, sans-serif; /* Garante que o placeholder use a fonte pixel art */
 }
 
 /* Estilos para a mensagem de erro do nickname */
 .nickname-error {
     color: rgb(247, 245, 245);
-    font-size: clamp(1rem, 3vw, 1.5rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 2rem;
     margin-top: -1rem;
     margin-bottom: 1rem;
     font-weight: bold; 
-    border: 10px, yellow; /* Isso parece um erro, deveria ser border-width, border-style, border-color */
+    border: 10x, yellow;
     padding: 5px;
     display: inline-block;
 }
 
 /* Estilos para os botões */
 .game-button {
-    padding: 18px 45px; /* Aumentado o padding para facilitar o toque */
-    font-size: clamp(1.2rem, 5vw, 1.8rem); /* NOVO: Tamanho de fonte responsivo */
+    padding: 15px 40px;
+    font-size: 1.5rem;
     font-weight: bold;
     background-color: rgb(202, 66, 66);
     color: white;
@@ -147,41 +120,44 @@ canvas {
     border-radius: 50px;
     cursor: pointer;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+    transition: all 0.3s ease; /* Transição suave para efeitos de hover/active */
     position: relative;
     overflow: hidden;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    width: 90%; /* NOVO: Largura responsiva */
-    max-width: 350px; /* NOVO: Largura máxima para desktops */
-    box-sizing: border-box;
 }
 
+/* Efeito hover genérico para os botões */
 .game-button:hover {
     transform: translateY(-3px); 
-    box-shadow: 0 8px 20px rgba(16, 16, 16, 0.4);
+    box-shadow: 0 8px 20px rgba(16, 16, 16, 0.4); /* Sombra mais pronunciada no hover */
     background-color: rgb(156, 168, 156);
 }
 
+/* Efeito de clique genérico para os botões */
 .game-button:active {
-    transform: translateY(2px);
+    transform: translateY(2px); /* Move ligeiramente para baixo no clique */
 }
 
+/* Estilo específico para o botão de restart */
 .restart-button {
-    font-size: clamp(1rem, 4vw, 1.5rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 1.2rem;
     background-color: rgb(108, 95, 95);
-    padding: 15px 30px; /* Ajuste de padding */
 }
 
+/* Efeito hover específico para o botão de restart (mudar cor no hover) */
 .restart-button:hover {
     background-color: rgb(125, 97, 97);
 }
 
+/* Estilos para o texto de pontuação final */
 .final-score-text {
-    font-size: clamp(1.5rem, 5vw, 2.5rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 2rem;
     margin-bottom: 2rem;
     color: black;
+    /* font-family já herdado do body */
 }
 
+/* Estilos para a lista de ranking */
 .ranking-list {
     list-style: none;
     padding: 0;
@@ -191,13 +167,13 @@ canvas {
 }
 
 .ranking-list li {
-    font-size: clamp(1.1rem, 3.5vw, 1.6rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 1.4rem;
     margin-bottom: 0.5rem;
     color: #0c0c0c; 
 }
 
-.ranking-list .no-scores {
-    font-size: clamp(1rem, 3vw, 1.3rem); /* NOVO: Tamanho de fonte responsivo */
+.ranking-list .no-scores { /* Para a mensagem 'Nenhuma pontuação registrada' */
+    font-size: 1.2rem;
     color: #070707;
 }
 
@@ -206,55 +182,48 @@ canvas {
     margin-top: 2rem;
     margin-bottom: 2rem;
     text-align: center;
-    width: 100%; /* Garante que o contêiner de seleção ocupe a largura total */
 }
 
 .player-selection-title {
     color: #fff;
-    font-size: clamp(1.5rem, 5vw, 2rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 1.8rem;
     margin-bottom: 1rem;
-    text-shadow: 10px 10px 10px rgba(11, 10, 10, 0.6);
+    text-shadow: 10 10 10px rgba(11, 10, 10, 0.6);
 }
 
 .player-images-container {
     display: flex;
     justify-content: center;
-    gap: 15px; /* NOVO: Diminui um pouco o gap para caber mais imagens em telas menores */
-    flex-wrap: wrap; /* Muito importante para que as imagens quebrem linha */
+    gap: 20px;
+    flex-wrap: wrap;
     margin-bottom: 15px;
-    padding: 0 10px; /* Adiciona um pequeno padding lateral para evitar que as imagens colem nas bordas */
 }
 
 .player-image-wrapper {
     cursor: pointer;
-    border: 5px dashed #f4f1e9; /* NOVO: Borda um pouco mais fina */
+    border: 9px dashed #f4f1e9; /* Borda dourada sólida mais grossa */
     border-radius: 2px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-    padding: 1px;
-    background-color: transparent;
-    box-sizing: border-box;
-    /* NOVO: Ajuste para que as imagens se redimensionem responsivamente */
-    flex-shrink: 0; /* Impede que os itens encolham abaixo do seu tamanho base */
-    flex-grow: 0; /* Impede que os itens cresçam além do seu tamanho base */
-    width: clamp(80px, 20vw, 120px); /* NOVO: Largura responsiva para os wrappers */
-    height: auto; /* Mantém a proporção */
+    padding: 1px; /* Reduz o padding para a imagem preencher mais */
+    background-color: transparent; /* Fundo transparente */
+    box-sizing: border-box; /* Garante que padding e border não aumentem o tamanho total */
 }
 
 .player-select-image {
-    width: 100%; /* A imagem preenche o wrapper */
-    height: 100%; /* A imagem preenche o wrapper */
+    width: 190px;
+    height: 190px;
     display: block;
-    object-fit: contain;
+    object-fit: contain; /* Mantém para evitar distorção da imagem */
 }
 
 .player-image-wrapper:hover {
-    border-color: #e7a90d;
+    border-color: #e7a90d; /* Dourado mais claro no hover */
     transform: translateY(-2px);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 .player-image-wrapper.selected {
-    border-color: #039823;
+    border-color: #039823; /* Dourado ainda mais claro para seleção */
     box-shadow: 0 0 8px #ffd700;
     transform: scale(1.05);
 }
@@ -264,28 +233,24 @@ canvas {
     position: absolute;
     top: 20px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%); /* Centraliza horizontalmente */
     display: flex;
     gap: 15px; 
     z-index: 101; 
-    flex-wrap: wrap; /* NOVO: Permite que os botões quebrem linha em telas pequenas */
-    justify-content: center; /* Centraliza os botões quando quebram linha */
-    width: 90%; /* Ocupa uma boa parte da largura */
-    max-width: 600px; /* Limita a largura em telas grandes */
 }
 
+/* Estilo para os botões de informação (Instruções, Sobre) */
 .info-button {
-    padding: 12px 25px; /* Aumentado o padding para facilitar o toque */
-    font-size: clamp(0.8rem, 2.5vw, 1.1rem); /* NOVO: Tamanho de fonte responsivo */
+    padding: 10px 20px;
+    font-size: 1rem;
     font-weight: bold;
-    background-color: #d6244e;
+    background-color: #d6244e; /* Um cinza mais discreto */
     color: white;
     border: 2px solid #888;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    white-space: nowrap; /* Evita que o texto do botão quebre */
 }
 
 .info-button:hover {
@@ -293,6 +258,7 @@ canvas {
     border-color: #fff;
 }
 
+/* Estilos para a camada de sobreposição do modal (fundo escuro semi-transparente) */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -303,14 +269,13 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 200;
-    display: none;
-    overflow-y: auto; /* Permite scroll no modal se o conteúdo for grande */
-    -webkit-overflow-scrolling: touch;
+    z-index: 200; /* Acima de tudo */
+    display: none; /* Inicia escondido */
 }
 
+/* Estilo para o conteúdo do modal (a caixa pop-up) */
 .modal-content {
-    background-color: #FFB6C1;
+    background-color: #FFB6C1; /* Rosa salmão pastel */
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
@@ -318,45 +283,46 @@ canvas {
     width: 95%;
     max-width: 1100px;
     text-align: center;
-    color: #333;
-    font-size: clamp(0.7rem, 2vw, 1rem); /* NOVO: Tamanho de fonte responsivo */
+    color: #333; /* Cor de texto mais escura para contraste com o rosa */
+    font-size: 0.65rem;
     line-height: 1.6;
-    animation: fadeInScale 0.3s ease-out forwards;
-    /* NOVO: Ajuste para scroll interno se o conteúdo for muito grande */
-    max-height: 90vh; /* Limita a altura do modal para que ele não ocupe 100% da tela */
-    overflow-y: auto;
+    animation: fadeInScale 0.3s ease-out forwards; /* Animação ao aparecer */
 }
 
+/* Estilo para o título dentro do modal */
 .modal-content h2 {
-    color: #a10a83;
-    font-size: clamp(1.5rem, 4vw, 2.2rem); /* NOVO: Tamanho de fonte responsivo */
+    color: #a10a83; /* Um vermelho escuro para o título */
+    font-size: 2rem;
     margin-bottom: 20px;
 }
 
+/* Estilo para o botão de fechar do modal */
 .close-button {
     position: absolute;
     top: 15px;
     right: 25px;
-    color: #2c06a9;
-    font-size: clamp(1.5rem, 5vw, 2.5rem); /* NOVO: Tamanho de fonte responsivo */
+    color: #2c06a9; /* Vermelho escuro */
+    font-size: 2rem;
     font-weight: bold;
     cursor: pointer;
 }
 
 .close-button:hover {
-    color: #461fc6;
+    color: #461fc6; /* Um tom um pouco mais claro no hover */
 }
 
+/* Estilo para links dentro do modal */
 .modal-content a {
-    color: #0000CD;
+    color: #0000CD; /* Azul médio para o link */
     text-decoration: underline;
     font-weight: bold;
 }
 
 .modal-content a:hover {
-    color: #00008B;
+    color: #00008B; /* Azul escuro no hover */
 }
 
+/* Animação para o modal aparecer */
 @keyframes fadeInScale {
     from {
         opacity: 0;
@@ -372,140 +338,55 @@ canvas {
 
 .touch-controls-container {
     position: absolute;
-    bottom: 20px;
+    bottom: 20px; /* Distância da parte inferior */
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding: 0 40px;
-    z-index: 50;
-    display: none;
-    box-sizing: border-box;
+    display: flex; /* Flexbox para organizar os botões */
+    justify-content: space-between; /* Espaço entre os grupos de botões (esquerda/direita e pular) */
+    align-items: flex-end; /* Alinha na parte inferior do contêiner */
+    padding: 0 40px; /* Espaço nas laterais */
+    z-index: 50; /* Acima do canvas, mas abaixo dos modais */
+    display: none; /* POR PADRÃO, OS BOTÕES ESTÃO ESCONDIDOS */
+    box-sizing: border-box; /* Garante que padding não aumente a largura total */
 }
 
 .touch-left-right-group {
     display: flex;
-    gap: 15px;
+    gap: 15px; /* Espaço entre os botões 'ESQ' e 'DIR' */
 }
 
 .touch-button {
-    background-color: rgba(50, 50, 50, 0.7);
-    border: 2px solid rgba(255, 255, 255, 0.5);
+    background-color: rgba(50, 50, 50, 0.7); /* Fundo escuro semi-transparente */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Borda mais clara */
     color: white;
     font-family: 'Press Start 2P', cursive, sans-serif;
-    font-size: clamp(0.8rem, 3vw, 1.2rem); /* NOVO: Tamanho de fonte responsivo */
+    font-size: 1.2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    cursor: pointer;
-    transition: background-color 0.1s ease, border-color 0.1s ease;
+    border-radius: 10px; /* Cantos arredondados */
+    user-select: none; /* Impede a seleção de texto ao tocar */
+    -webkit-tap-highlight-color: transparent; /* Remove o destaque de toque no iOS/Android */
+    cursor: pointer; /* Indica que é clicável */
+    transition: background-color 0.1s ease, border-color 0.1s ease; /* Transição suave */
 }
 
+/* Botões de Esquerda e Direita */
 #leftBtn, #rightBtn {
-    width: clamp(70px, 15vw, 100px); /* NOVO: Tamanho responsivo */
-    height: clamp(70px, 15vw, 100px); /* NOVO: Tamanho responsivo */
+    width: 90px;
+    height: 90px;
 }
 
+/* Botão de Pular */
 .jump-button {
-    width: clamp(90px, 20vw, 130px); /* NOVO: Tamanho responsivo */
-    height: clamp(90px, 20vw, 130px); /* NOVO: Tamanho responsivo */
-    border-radius: 50%;
-    background-color: rgba(100, 100, 200, 0.7);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* Torna o botão redondo */
+    background-color: rgba(100, 100, 200, 0.7); /* Uma cor diferente para o botão de pular */
 }
 
+/* Estilo para o botão quando ele está "pressionado" (ativo) */
 .touch-button.active {
-    background-color: rgba(0, 255, 0, 0.7);
+    background-color: rgba(0, 255, 0, 0.7); /* Verde quando ativo */
     border-color: #0f0;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-}
-
-/* Media Queries para ajustar ainda mais em telas muito pequenas */
-@media (max-width: 768px) {
-    .game-title {
-        font-size: clamp(1.2rem, 6vw, 2.5rem);
-        margin-bottom: 1.5rem;
-    }
-    .game-button {
-        padding: 15px 30px;
-        font-size: clamp(1rem, 4.5vw, 1.5rem);
-    }
-    .nickname-input {
-        padding: 12px;
-        font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-    }
-    .player-images-container {
-        gap: 10px;
-    }
-    .player-image-wrapper {
-        width: clamp(60px, 18vw, 100px);
-        border: 4px dashed #f4f1e9;
-    }
-    .info-button {
-        padding: 8px 15px;
-        font-size: clamp(0.7rem, 2.2vw, 0.9rem);
-    }
-    .modal-content {
-        padding: 20px;
-        font-size: clamp(0.6rem, 1.8vw, 0.9rem);
-    }
-    .modal-content h2 {
-        font-size: clamp(1.2rem, 3.5vw, 2rem);
-    }
-    .close-button {
-        font-size: clamp(1.2rem, 4vw, 2rem);
-        top: 10px;
-        right: 15px;
-    }
-    .touch-controls-container {
-        padding: 0 20px;
-    }
-    #leftBtn, #rightBtn {
-        width: clamp(60px, 18vw, 80px);
-        height: clamp(60px, 18vw, 80px);
-    }
-    .jump-button {
-        width: clamp(80px, 22vw, 110px);
-        height: clamp(80px, 22vw, 110px);
-    }
-}
-
-@media (max-width: 480px) {
-    .game-title {
-        font-size: clamp(1rem, 7vw, 2rem);
-        margin-bottom: 1rem;
-    }
-    .game-button {
-        padding: 12px 25px;
-        font-size: clamp(0.9rem, 5vw, 1.3rem);
-    }
-    .nickname-input {
-        padding: 10px;
-        font-size: clamp(0.8rem, 4vw, 1.1rem);
-    }
-    .player-images-container {
-        gap: 8px;
-    }
-    .player-image-wrapper {
-        width: clamp(50px, 20vw, 80px);
-        border: 3px dashed #f4f1e9;
-    }
-    .info-button {
-        padding: 6px 12px;
-        font-size: clamp(0.6rem, 2.5vw, 0.8rem);
-    }
-    .touch-controls-container {
-        padding: 0 10px;
-        bottom: 10px;
-    }
-    #leftBtn, #rightBtn {
-        width: clamp(50px, 20vw, 70px);
-        height: clamp(50px, 20vw, 70px);
-    }
-    .jump-button {
-        width: clamp(70px, 25vw, 100px);
-        height: clamp(70px, 25vw, 100px);
-    }
 }
