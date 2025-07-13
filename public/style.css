@@ -341,6 +341,14 @@ canvas {
     transition: background-color 0.1s ease, border-color 0.1s ease;
 }
 
+.touch-left-right-group {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+
 /* Tamanho dos botões ESQ e DIR */
 #leftBtn, #rightBtn {
     width: 90px;
