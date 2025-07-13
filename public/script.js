@@ -1,19 +1,5 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const gameWrapper = document.getElementById('game-wrapper');
-let currentScale = 1;
-
-// Referências a elementos da tela inicial e game over (agora no HTML)
-const startScreen = document.getElementById('startScreen');
-const nicknameInput = document.getElementById('nicknameInput');
-const nicknameError = document.getElementById('nicknameError');
-const playerImagesContainer = document.getElementById('playerImagesContainer');
-const startButton = document.getElementById('startButton');
-const gameOverScreen = document.getElementById('gameOverScreen');
-const finalScoreText = document.getElementById('finalScoreText');
-const rankingList = document.getElementById('rankingList');
-const restartButton = document.getElementById('restartButton');
-
 
 // CRIAÇÃO DE BOTÕES VIRTUAIS PARA USO EM TOUCHSCREEN:
 
@@ -95,19 +81,11 @@ function setupTouchListeners() {
         jumpTouchBtn.classList.remove('active'); 
     });
 
-    // Impedir Scroll no Canvas SOMENTE QUANDO O JOGO ESTIVER ATIVO
-    const gameCanvas = document.getElementById('gameCanvas'); 
+    // Impedir Scroll
+    const gameCanvas = document.getElementById('gameCanvas'); // Pegue a referência ao seu canvas
     if (gameCanvas) {
-        gameCanvas.addEventListener('touchstart', (e) => { 
-            if (gameStarted) { // Só previne se o jogo estiver rodando
-                e.preventDefault(); 
-            }
-        }, { passive: false });
-        gameCanvas.addEventListener('touchmove', (e) => { 
-            if (gameStarted) { // Só previne se o jogo estiver rodando
-                e.preventDefault(); 
-            }
-        }, { passive: false });
+        gameCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); }, { passive: false });
+        gameCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
     }
 }
 
@@ -236,81 +214,6 @@ collectSoundSt2.volume = 0.7;
 bgMusicSt3.loop = true;
 bgMusicSt3.volume = 0.7;
 collectSoundSt2.volume = 0.7;
-
-
-/// AJUSTE TAMANHO MOBILE:
-
-const GAME_ORIGINAL_WIDTH = 1100; 
-const GAME_ORIGINAL_HEIGHT = 700; 
-
-function resizeGame() {
-    const wrapperWidth = gameWrapper.clientWidth;   
-    const wrapperHeight = gameWrapper.clientHeight; 
-
-    let newWidth, newHeight;
-    const gameRatio = GAME_ORIGINAL_WIDTH / GAME_ORIGINAL_HEIGHT; 
-    if (wrapperWidth / wrapperHeight > gameRatio) {
-        newHeight = wrapperHeight;
-        newWidth = newHeight * gameRatio;
-    } else {
-        newWidth = wrapperWidth;
-        newHeight = newWidth / gameRatio;
-    }
-
-    // Define as dimensões do canvas
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    
-    // Atualiza a variável global currentScale
-    currentScale = newWidth / GAME_ORIGINAL_WIDTH; // Ou newHeight / GAME_ORIGINAL_HEIGHT, deve ser o mesmo
-
-    // Ajusta as propriedades do player com base na nova escala
-    player.x = (GAME_ORIGINAL_WIDTH / 4) * currentScale; 
-    player.y = (GAME_ORIGINAL_HEIGHT - (player.height * currentScale)); // Ajusta para o chão usando a altura escalada
-    
-    player.width = 80 * currentScale; 
-    player.height = 90 * currentScale; 
-
-    // Ajusta as velocidades e gravidade para manter a jogabilidade consistente
-    gravity = 0.6 * currentScale;
-    jumpStrength = -15 * currentScale;
-    speed = 4 * currentScale;
-    
-    // Ajusta as dimensões dos elementos existentes no jogo caso estejam em tela
-    // Isso é importante para evitar que objetos fiquem com tamanhos incorretos ao redimensionar
-    // enquanto o jogo está rodando.
-    obstacles.forEach(o => {
-        o.width = 60 * currentScale;
-        o.height = 60 * currentScale;
-    });
-    slowdownItems.forEach(item => {
-        item.width = 90 * currentScale;
-        item.height = 90 * currentScale;
-    });
-    shieldItems.forEach(item => {
-        item.width = 80 * currentScale;
-        item.height = 80 * currentScale;
-    });
-    bonezin.forEach(item => {
-        item.width = 80 * currentScale;
-        item.height = 80 * currentScale;
-    });
-    stage2Obstacles.forEach(o => {
-        o.width = 100 * currentScale;
-        o.height = 100 * currentScale;
-    });
-    stage2Collectibles.forEach(item => {
-        item.width = 90 * currentScale;
-        item.height = 90 * currentScale;
-    });
-
-    villain.width = 300 * currentScale;
-    villain.height = 800 * currentScale;
-    villain.y = (GAME_ORIGINAL_HEIGHT - villain.height); // Ajusta vilão para o chão
-    
-    // Re-desenha o jogo imediatamente após o redimensionamento
-    drawGame();
-}
 
 
 // Objetos do jogo
@@ -445,17 +348,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('API Screen Orientation Lock não suportada.');
         }
         window.addEventListener('orientationchange', () => {
-        resizeGame(); // Redimensiona o jogo ao mudar a orientação
         });
 
     } else {
         touchControlsContainer.style.display = 'none';
     }
-    // Chama resizeGame() no carregamento inicial da página
-    resizeGame(); 
-    
-    // Chama resizeGame() sempre que a janela for redimensionada
-    window.addEventListener('resize', resizeGame);
 });
 
 const topButtonsContainer = document.querySelector('.top-buttons-container'); 
@@ -475,11 +372,36 @@ function showTopButtons() {
 
 function showStartScreen() {
     showTopButtons();
-    startScreen.style.display = 'flex'; // Mostra a tela inicial (agora no HTML)
+    const startContainer = document.createElement('div');
+    startContainer.classList.add('overlay-screen', 'start-container');
+    startContainer.id = 'startContainer';
 
-    // Preenche as imagens de seleção de personagem (ainda dinâmico)
-    playerImagesContainer.innerHTML = ''; // Limpa antes de adicionar
-    let selectedPlayerId = null; // Reinicia a seleção
+    const title = document.createElement('h1');
+    title.textContent = 'TRABALHAR NÃO DÁ REVIEW NO LETTERBOXD';
+    title.classList.add('game-title');
+
+    const nicknameInput = document.createElement('input');
+    nicknameInput.setAttribute('type', 'text');
+    nicknameInput.setAttribute('placeholder', 'Nickname');
+    nicknameInput.setAttribute('maxlength', '8');
+    nicknameInput.classList.add('nickname-input');
+
+    const nicknameError = document.createElement('p');
+    nicknameError.classList.add('nickname-error');
+    nicknameError.style.display = 'none';
+
+    const playerSelectionContainer = document.createElement('div');
+    playerSelectionContainer.classList.add('player-selection-container');
+
+    const playerSelectionTitle = document.createElement('h2');
+    playerSelectionTitle.textContent = 'Escolha seu personagem:';
+    playerSelectionTitle.classList.add('player-selection-title');
+
+    const playerImagesContainer = document.createElement('div');
+    playerImagesContainer.classList.add('player-images-container');
+
+    let selectedPlayerId = null; 
+
     imgChoosePlayer.forEach(pData => {
         const playerImageWrapper = document.createElement('div');
         playerImageWrapper.classList.add('player-image-wrapper');
@@ -502,8 +424,14 @@ function showStartScreen() {
         playerImagesContainer.appendChild(playerImageWrapper);
     });
 
-    // Event listener para o botão START (agora no HTML)
-    startButton.onclick = () => { // Usar onclick para evitar múltiplos listeners se showStartScreen for chamada várias vezes
+    playerSelectionContainer.appendChild(playerSelectionTitle);
+    playerSelectionContainer.appendChild(playerImagesContainer);
+
+    const startButton = document.createElement('button');
+    startButton.textContent = 'START!';
+    startButton.classList.add('game-button', 'start-button');
+
+    startButton.addEventListener('click', () => {
         const nickname = nicknameInput.value.trim();
         if (nickname.length === 0 || nickname.length > 8) {
             nicknameError.textContent = 'O nickname deve ter entre 1 e 8 letras.';
@@ -520,17 +448,15 @@ function showStartScreen() {
         playerNickname = nickname;
         nicknameError.style.display = 'none';
         bgMusic.play().then(() => {
-            startScreen.style.opacity = '0';
-            startScreen.style.transition = 'opacity 0.5s ease';
+            startContainer.style.opacity = '0';
+            startContainer.style.transition = 'opacity 0.5s ease';
 
             setTimeout(() => {
-                startScreen.style.display = 'none'; // Esconde a tela inicial
-                startScreen.style.opacity = '1'; // Reseta opacidade para a próxima vez
+                document.body.removeChild(startContainer);
                 showStageMessage = true;
                 stageMessageAlpha = 1.0;
                 stageMessageTimer = STAGE_MESSAGE_DURATION; 
                 gameStarted = true;
-                initGame(); // Reinicia o jogo e aplica a escala
                 gameLoop(); 
             }, 500); 
         }).catch(error => {
@@ -538,7 +464,14 @@ function showStartScreen() {
             startButton.textContent = 'CLIQUE NOVAMENTE';
             startButton.style.backgroundColor = 'rgb(108, 95, 95)';
         });
-    };
+    });
+
+    startContainer.appendChild(title);
+    startContainer.appendChild(nicknameInput);
+    startContainer.appendChild(nicknameError);
+    startContainer.appendChild(playerSelectionContainer); 
+    startContainer.appendChild(startButton);
+    document.body.appendChild(startContainer);
 
     drawBackground(); 
 }
@@ -588,26 +521,26 @@ document.addEventListener("keyup", (e) => {
 
  function spawnObstacle() {
     obstacles.push({
-        x: Math.random() * (canvas.width - (60 * currentScale)),
+        x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 60 * currentScale,
-        height: 60 * currentScale,
+        width: 60,
+        height: 60,
     });
 }
 function spawnSlowdown() {
     slowdownItems.push({
-        x: Math.random() * (canvas.width - (90 * currentScale)),
+        x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 90 * currentScale,
-        height: 90 * currentScale,
+        width: 90,
+        height: 90,
     });
 }
 function spawnShield() {
     shieldItems.push({
-        x: Math.random() * (canvas.width - (80 * currentScale)),
+        x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 80 * currentScale, 
-        height: 80 * currentScale, 
+        width: 80, 
+        height: 80, 
         image: imgShield,
     });
 }
@@ -615,10 +548,10 @@ function spawnBonezin() {
     const randomImageIndex = Math.floor(Math.random() * bonezin_assets.length);
     const chosenImage = bonezin_assets[randomImageIndex];
     bonezin.push({
-        x: Math.random() * (canvas.width - (70 * currentScale)), 
-        y: -(70 * currentScale), 
-        width: 80 * currentScale,
-        height: 80 * currentScale,
+        x: Math.random() * (canvas.width - 70), 
+        y: -70, 
+        width: 80,
+        height: 80,
         image: chosenImage
     });
 }
@@ -631,8 +564,8 @@ function spawnBonezin() {
 // Spawn de obstáculos para a Stage 2
 
 function spawnStage2Obstacle() {
-    const obstacleWidth = 100 * currentScale; // Tamanho fixo para os obstáculos da Stage 2
-    const obstacleHeight = 100 * currentScale;
+    const obstacleWidth = 100; // Tamanho fixo para os obstáculos da Stage 2
+    const obstacleHeight = 100;
     const groundLevel = canvas.height; 
     const obstacleY = groundLevel - obstacleHeight; 
     // Lógica para espaçamento entre obstáculos
@@ -642,16 +575,16 @@ function spawnStage2Obstacle() {
     if (lastObstacle) {
         const lastObstacleRight = lastObstacle.x + lastObstacle.width;
         // O randomGap agora pode ser um pouco maior para evitar um "muro"
-        const randomGap = Math.random() * ((MAX_GAP * currentScale) - (MIN_GAP * currentScale)) + (MIN_GAP * currentScale); 
+        const randomGap = Math.random() * (MAX_GAP - MIN_GAP) + MIN_GAP; 
         newObstacleX = lastObstacleRight + randomGap;
 
-        if (newObstacleX < lastObstacleRight + (MIN_GAP * currentScale)) {
-            newObstacleX = lastObstacleRight + (MIN_GAP * currentScale);
+        if (newObstacleX < lastObstacleRight + MIN_GAP) {
+            newObstacleX = lastObstacleRight + MIN_GAP;
         }
     }
     // Se o novo obstáculo aparecer muito fora da tela (longe demais), ajusta para mais perto
-    if (newObstacleX > canvas.width + (MAX_GAP * currentScale)) {
-        newObstacleX = canvas.width + Math.random() * ((MAX_GAP * currentScale) / 2); 
+    if (newObstacleX > canvas.width + MAX_GAP) {
+        newObstacleX = canvas.width + Math.random() * (MAX_GAP / 2); 
     }
 
     const randomImageIndex = Math.floor(Math.random() * Obstacle2.length);
@@ -667,9 +600,9 @@ function spawnStage2Obstacle() {
 
 // Spawn de objeto coletável aleatório para a Stage 2
 function spawnStage2Collectible() {
-    const collectibleSize = 90 * currentScale;
+    const collectibleSize = 90;
     const groundLevel = canvas.height;
-    const collectibleY = groundLevel - collectibleSize - (Math.random() * 100 * currentScale); // Perto do chão, com variação
+    const collectibleY = groundLevel - collectibleSize - (Math.random() * 100); // Perto do chão, com variação
 
     stage2Collectibles.push({
         x: canvas.width,
@@ -684,16 +617,16 @@ function spawnStage2Collectible() {
 /////////////////////////////////////
 
 
-function checkCollision(a, b, collisionScale = 1) {
-    const ax = a.x + (1 - collisionScale) * a.width / 2;
-    const ay = a.y + (1 - collisionScale) * a.height / 2;
-    const aw = a.width * collisionScale;
-    const ah = a.height * collisionScale;
+function checkCollision(a, b, scale = 1) {
+    const ax = a.x + (1 - scale) * a.width / 2;
+    const ay = a.y + (1 - scale) * a.height / 2;
+    const aw = a.width * scale;
+    const ah = a.height * scale;
 
-    const bx = b.x + (1 - collisionScale) * b.width / 2;
-    const by = b.y + (1 - collisionScale) * b.height / 2;
-    const bw = b.width * collisionScale;
-    const bh = b.height * collisionScale;
+    const bx = b.x + (1 - scale) * b.width / 2;
+    const by = b.y + (1 - scale) * b.height / 2;
+    const bw = b.width * scale;
+    const bh = b.height * scale;
 
     return ax < bx + bw &&
         ax + aw > bx &&
@@ -793,7 +726,7 @@ function updateStage1() {
         // Atualização da taxa de spawn e velocidade dos obstáculos
         // Aumenta a dificuldade do jogo gradualmente
         obstacleSpawnRate = 2 + 0.05 * Math.sqrt(frame / 180); // Aumenta a taxa de spawn
-        obstacleSpeed = Math.max(1 * currentScale, (baseSpeed + 0.4 * Math.sqrt(frame / 60)) * currentScale); // Aumenta a velocidade e escala
+        obstacleSpeed = Math.max(1, baseSpeed + 0.4 * Math.sqrt(frame / 60)); // Aumenta a velocidade
 
         // Iterar sobre Obstacles (CLT)
         for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -818,9 +751,9 @@ function updateStage1() {
         // Iterar sobre Slowdown Items (Absolute Cinema): move, verifica colisão e remove
         for (let i = slowdownItems.length - 1; i >= 0; i--) {
             let item = slowdownItems[i];
-            item.y += (2 * currentScale); 
+            item.y += 2; 
             if (checkCollision(player, item, 1)) { 
-                obstacleSpeed = Math.max(1 * currentScale, obstacleSpeed * 0.88); /// reduz a velocidade (escalada)
+                obstacleSpeed = Math.max(1, obstacleSpeed * 0.88); /// reduz a velocidade
                 score += buff_score; // Adiciona pontos
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: `+${buff_score}` });
                 slowdownItems.splice(i, 1); 
@@ -835,7 +768,7 @@ function updateStage1() {
         // Iterar sobre Shield Items: move, verifica colisão e remove
         for (let i = shieldItems.length - 1; i >= 0; i--) {
             let item = shieldItems[i];
-            item.y += (2 * currentScale);
+            item.y += 2;
 
             if (checkCollision(player, item, 1)) { 
                 isShieldActive = true; 
@@ -852,7 +785,7 @@ function updateStage1() {
 
         for (let i = bonezin.length - 1; i >= 0; i--) {
             let item = bonezin[i];
-            item.y += (2 * currentScale); 
+            item.y += 2; 
             if (checkCollision(player, item, 1)) {
                 score += 50; 
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: '50!' });
@@ -892,13 +825,12 @@ function updateStage1() {
         bonezin = []; 
 
         player.x = canvas.width / 4;
-        player.y = canvas.height - player.height; // Garante que o player esteja no chão
         player.vy = 0;
         player.vx = 0;
         player.onGround = true;
 
-        villain.x = -(villain.width * currentScale); // Esconde o vilão fora da tela inicial
-        villain.y = canvas.height - villain.height; // Garante vilão no chão
+        villain.x = -villain.width;
+        villain.y = canvas.height - villain.height;
 
         bgMusic.pause();
         bgMusic.currentTime = 0; 
@@ -924,24 +856,12 @@ function updateStage2() {
     if ((keys.up || keys.space || isJumpTouched) && player.onGround) {
         player.vy = jumpStrength; 
         player.onGround = false; 
-        isJumpTouched = false;      
+        isJumpTouched = false;    
     }
-
-    player.x += player.vx; 
-    player.y += player.vy; 
-    player.vy += gravity; 
-
-    if (player.x < 0) player.x = 0;
-    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-    if (player.y + player.height >= canvas.height) {
-        player.y = canvas.height - player.height;
-        player.vy = 0;
-        player.onGround = true;
-    }
-
     // Mover o fundo para dar a impressão de corrida contínua 
+
     if (!showStageMessage) { 
-        backgroundSt2X -= (backgroundScrollSpeed + 0.1 * Math.sqrt(frame / 60)) * currentScale; // Escala a velocidade de scroll
+        backgroundSt2X -= backgroundScrollSpeed + 0.1 * Math.sqrt(frame / 60);;
         if (backgroundSt2X <= -canvas.width) {
             backgroundSt2X += canvas.width; 
         }
@@ -961,9 +881,9 @@ function updateStage2() {
         // Garante que haja um espaço mínimo para o próximo spawn E respeita o intervalo de tempo
         if (frame - lastObstacleSpawnTime >= stage2SpawnInterval) {
             // Verifica se o último obstáculo existente está longe o suficiente
-            if (!lastObstacle || (lastObstacle.x + lastObstacle.width + (MIN_GAP * currentScale) < canvas.width)) {
-                    spawnStage2Obstacle(); 
-                    lastObstacleSpawnTime = frame; // Atualiza o tempo do último spawn
+            if (!lastObstacle || (lastObstacle.x + lastObstacle.width + MIN_GAP < canvas.width)) {
+                 spawnStage2Obstacle(); 
+                 lastObstacleSpawnTime = frame; // Atualiza o tempo do último spawn
             }
         }
         // Spawn do objeto coletável a cada 20 segundos
@@ -974,7 +894,7 @@ function updateStage2() {
 
         for (let i = stage2Obstacles.length - 1; i >= 0; i--) {
             let o = stage2Obstacles[i];
-            o.x -= stage2ObstacleSpeed * currentScale; // Obstáculos se movem para a esquerda (velocidade dos objetos escalada)
+            o.x -= stage2ObstacleSpeed; // Obstáculos se movem para a esquerda (velocidade dos objetos)
             if (checkCollision(player, o, 0.7)) {
                 gameOver = true;
                 bgMusicSt2.pause();
@@ -983,22 +903,23 @@ function updateStage2() {
             }
 
             // +50 pontos por objeto pulado
-            if (!o.scored && o.x + o.width < player.x) {
+            if (!o.scored && o.x + o.width < player.x) { 
                 o.scored = true;
                 score += 50;
-                scorePopups.push({ x: player.x + player.width / 2, y: player.y, alpha: 1.0, timer: 60, text: "+50!" });
+                scorePopups.push({ x: player.x + player.width / 2, y: player.y, alpha: 1.0, timer: 60, text: "+50!" }); 
             }
-            if (o.x + o.width < 0) {
+            if (o.x + o.width < 0) { 
                 stage2Obstacles.splice(i, 1);
             }
         }
 
         // COLETÁVEIS:
+
         for (let i = stage2Collectibles.length - 1; i >= 0; i--) {
             let item = stage2Collectibles[i];
-            item.x -= stage2ObstacleSpeed * currentScale; // Movimento escalado
+            item.x -= stage2ObstacleSpeed;
 
-            if (checkCollision(player, item, 1)) {
+            if (checkCollision(player, item, 1)) { 
                 stage2Collectibles.splice(i, 1);
                 collectSoundSt2.play();
 
@@ -1021,333 +942,380 @@ function updateStage2() {
                     popupText = "-100! sifudeu";
                 }
                 score += pointsEarned;
+                score = Math.max(0, score); // Garante que a pontuação não seja negativa
                 scorePopups.push({ x: item.x + item.width / 2, y: item.y, alpha: 1.0, timer: 60, text: popupText });
             }
-
+            // Remove o item se ele sair da tela
             if (item.x + item.width < 0) {
                 stage2Collectibles.splice(i, 1);
             }
         }
 
-        // Movimento do vilão (se o vilão se move)
-        // O vilão tenta alcançar o player, mas não se move para fora da tela.
-        // Sua velocidade aumenta com o tempo.
-        if (villain.x < player.x + (player.width * 0.5) && villain.x < canvas.width - (villain.width * 1.5)) {
-             villain.x += (villainSpeed * (frame / 60)) * currentScale; // Velocidade do vilão escalada
-        }
 
-        // Colisão do vilão com o player
-        if (checkCollision(player, villain, 0.8)) {
+    ///////////////////// VILLAIN /////////////////////// 
+
+        villain.y = canvas.height - villain.height; 
+        villain.x += villainSpeed + 0.006 * Math.sqrt(frame / 60);
+        
+        // Garante que não saia da tela pela direita
+        if (villain.x > canvas.width) {
+            villain.x = -villain.width; 
+            villain.y = canvas.height - villain.height;
+        }
+        if (villain.x + villain.width < 0) villain.x = -villain.width;
+
+        if (checkCollision(player, villain, 0.9)) {
             gameOver = true;
             bgMusicSt2.pause();
             showGameOver();
             return;
         }
+    }
 
-    } // Fim do if (!showStageMessage) para Stage 2
+     /// Transição de fase
 
-    // Transição para Stage 3
     if (score >= STAGE2_TRANSITION_SCORE && currentStage === 2) {
         currentStage = 3;
         showStageMessage = true;
-        stageMessageTimer = STAGE_MESSAGE_DURATION;
+        stageMessageTimer = STAGE_MESSAGE_DURATION; 
+        obstacles = [];
+        slowdownItems = [];
 
-        // Limpa os elementos da Stage 2
-        stage2Obstacles = [];
-        stage2Collectibles = [];
-        villain.x = -villain.width * currentScale; // Esconde o vilão
-
-        // Resetar player para o início da Stage 3
-        player.x = canvas.width / 4;
-        player.y = canvas.height - player.height; // No chão
+        player.x = canvas.width / 4; 
         player.vy = 0;
-        player.vx = 0;
+        player.vx = 0; 
         player.onGround = true;
 
-        bgMusicSt2.pause();
-        bgMusicSt2.currentTime = 0;
+        bgMusic.pause();
+        bgMusic.currentTime = 0;
         bgMusicSt3.play().catch(error => {
             console.error("Erro ao iniciar música da Stage 3:", error);
         });
     }
-
-} // Fim de updateStage2
-
-
-// ################################################ //
-// ### FUNÇÃO DE ATUALIZAÇÃO PARA A STAGE 3 /########/
-// ################################################ //
-
-function updateStage3() {
-    frame++;
-
-    if (keys.left || isLeftTouched) {
-        player.vx = -speed;
-    } else if (keys.right || isRightTouched) {
-        player.vx = speed;
-    } else {
-        player.vx = 0;
-    }
-
-    if ((keys.up || keys.space || isJumpTouched) && player.onGround) {
-        player.vy = jumpStrength;
-        player.onGround = false;
-        isJumpTouched = false;
-    }
-
-    player.x += player.vx;
-    player.y += player.vy;
-    player.vy += gravity;
-
-    if (player.x < 0) player.x = 0;
-    if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
-    if (player.y + player.height >= canvas.height) {
-        player.y = canvas.height - player.height;
-        player.vy = 0;
-        player.onGround = true;
-    }
-
-    if (showStageMessage) {
-        stageMessageTimer--;
-        if (stageMessageTimer <= 0) {
-            showStageMessage = false;
-        }
-    }
-
-    // Lógica para Stage 3 (exemplo, adicione seus próprios elementos)
-    // Aumenta a pontuação continuamente na Stage 3
-    if (!showStageMessage) {
-        score += 1;
-    }
-
-    // Não há condição de vitória ou fim de jogo definida para Stage 3, conforme seu código original.
 }
 
+//########################################################
+//############ // FUNÇÃO UPDATE PRINCIPAL // ################
+//#######################################################
 
-/////////////////////////////////////////////////
-/////////////////// D R A W S ///////////////////
-/////////////////////////////////////////////////
-
-// Funções de desenho para o Canvas
-function drawPlayer() {
-    if (chosenPlayerImage) {
-        ctx.drawImage(chosenPlayerImage, player.x, player.y, player.width, player.height);
-        if (isShieldActive) {
-            ctx.strokeStyle = 'rgba(0, 255, 255, ' + (shieldTimer / SHIELD_DURATION) + ')';
-            ctx.lineWidth = 5 * currentScale; 
-            ctx.strokeRect(player.x, player.y, player.width, player.height);
-        }
+function update() {
+    if (!gameStarted || gameOver) {
+        player.vx = 0; 
+        return; 
     }
-}
-
-function drawObstacles() {
-    for (let o of obstacles) {
-        ctx.drawImage(imgObstacle, o.x, o.y, o.width, o.height);
-    }
-}
-
-function drawSlowdownItems() {
-    for (let item of slowdownItems) {
-        ctx.drawImage(imgSlowdown, item.x, item.y, item.width, item.height);
-    }
-}
-
-function drawShieldItems() {
-    for (let item of shieldItems) {
-        ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
-    }
-}
-
-function drawBonezin() {
-    for (let item of bonezin) {
-        ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
-    }
-}
-
-function drawVillain() {
-    ctx.drawImage(imgVillain, villain.x, villain.y, villain.width, villain.height);
-}
-
-function drawStage2Obstacles() {
-    for (let o of stage2Obstacles) {
-        ctx.drawImage(o.image, o.x, o.y, o.width, o.height);
-    }
-}
-
-function drawStage2Collectibles() {
-    for (let item of stage2Collectibles) {
-        ctx.drawImage(imgCollectibleSt2, item.x, item.y, item.width, item.height);
-    }
-}
-
-function drawScore() {
-    ctx.fillStyle = "white";
-    ctx.font = `${24 * currentScale}px 'Press Start 2P'`; 
-    ctx.textAlign = "left";
-    ctx.fillText("SCORE: " + score, 20 * currentScale, 40 * currentScale); 
-}
-
-function drawNickname() {
-    ctx.fillStyle = "white";
-    ctx.font = `${20 * currentScale}px 'Press Start 2P'`; 
-    ctx.textAlign = "right";
-    ctx.fillText("PLAYER: " + playerNickname, canvas.width - (20 * currentScale), 40 * currentScale); 
-}
-
-function drawScorePopups() {
-    for (let i = scorePopups.length - 1; i >= 0; i--) {
-        let popup = scorePopups[i];
-        ctx.fillStyle = `rgba(255, 255, 255, ${popup.alpha})`;
-        ctx.font = `${20 * currentScale}px 'Press Start 2P'`; 
-        ctx.textAlign = "center";
-        ctx.fillText(popup.text, popup.x, popup.y);
-        popup.y -= 1 * currentScale; 
-        popup.alpha -= 0.015;
-        if (popup.alpha <= 0) {
-            scorePopups.splice(i, 1);
-        }
-    }
-}
-
-function drawStageTransitionMessage() {
-    if (showStageMessage) {
-        ctx.save();
-        ctx.globalAlpha = stageMessageAlpha;
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height); // Fundo escuro
-        ctx.fillStyle = "white";
-        ctx.font = `${40 * currentScale}px 'Press Start 2P'`; 
-        ctx.textAlign = "center";
-        ctx.fillText(`STAGE ${currentStage}`, canvas.width / 2, canvas.height / 2);
-        ctx.restore();
-    }
-}
-
-
-function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBackground(); // Desenha o background da fase atual
+    player.vx = 0; 
 
     if (currentStage === 1) {
-        drawObstacles();
-        drawSlowdownItems();
-        drawShieldItems();
-        drawBonezin();
+        updateStage1(); 
     } else if (currentStage === 2) {
-        drawVillain();
-        drawStage2Obstacles();
-        drawStage2Collectibles();
-    } else if (currentStage === 3) {
-        // Desenhos específicos para a Stage 3 aqui
-        // Ex: drawST3Platforms();
+        updateStage2(); 
+    }
+    else if (currentStage === 3) {
+        updateStage3();
     }
 
-    drawPlayer();
-    drawScore();
-    drawNickname();
-    drawScorePopups(); 
+    // Aplica a velocidade horizontal ao jogador
+    player.x += player.vx; 
+    player.y += player.vy;
+    player.vy += gravity; 
 
-    // Desenha a mensagem de transição por último para garantir que esteja por cima
-    drawStageTransitionMessage();
+    if (player.y + player.height >= canvas.height) {
+        player.y = canvas.height - player.height; 
+        player.vy = 0;                             
+        player.onGround = true;                    
+    }
+    // Limita o jogador às bordas da tela horizontalmente
+    if (player.x < 0) {
+        player.x = 0;
+    }
+    if (player.x + player.width > canvas.width) {
+        player.x = canvas.width - player.width;
+    }
+    frame++;
 }
+
+// MOSTRAR GAME OVER:
+
+async function showGameOver() {
+    bgMusic.pause();
+    bgMusicSt2.pause();
+    bgMusicSt3.pause();
+    gameOverMusic.play().catch(error => {
+        console.error("Erro ao iniciar música de Game Over:", error);
+    });
+    const backendUrl = 'https://game-cinefilo.vercel.app/api';
+    obstacles = [];
+    slowdownItems = [];
+    shieldItems = []; 
+    stage2Obstacles = [];
+    stage2Collectibles = [];
+    shieldItems = [];
+
+    if (playerNickname && score > 0) {
+        try {
+            const response = await fetch(`${backendUrl}/scores`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nickname: playerNickname,
+                    score: score
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Falha ao enviar pontuação:', errorData.message);
+            } else {
+                console.log('Pontuação enviada com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao enviar pontuação para o backend:', error);
+        }
+    }
+
+    let topScores = [];
+    try {
+        const response = await fetch(`${backendUrl}/top10`);
+        if (response.ok) {
+            topScores = await response.json();
+        } else {
+            console.error('Falha ao buscar as maiores pontuações.');
+        }
+    } catch (error) {
+        console.error('Erro ao buscar as maiores pontuações:', error);
+    }
+
+    const gameOverScreen = document.createElement('div');
+    gameOverScreen.classList.add('overlay-screen', 'game-over-screen');
+
+    const gameOverText = document.createElement('h1');
+    gameOverText.textContent = 'VOCÊ FOI CONTRATADO.';
+    gameOverText.classList.add('game-over-title');
+
+    const scoreText = document.createElement('div');
+    scoreText.textContent = `Pontuação: ${score}`;
+    scoreText.classList.add('final-score-text');
+
+    const rankingTitle = document.createElement('h2');
+    rankingTitle.textContent = 'Top 10:';
+    rankingTitle.classList.add('ranking-title');
+
+    const rankingList = document.createElement('ul');
+    rankingList.classList.add('ranking-list');
+    if (topScores.length > 0) {
+        topScores.forEach((s, index) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${index + 1}. ${s.nickname} - ${s.score}`;
+            rankingList.appendChild(listItem);
+        });
+    } else {
+        const noScores = document.createElement('li');
+        noScores.textContent = 'Nenhuma pontuação registrada ainda.';
+        noScores.classList.add('no-scores');
+        rankingList.appendChild(noScores);
+    }
+
+    const restartButton = document.createElement('button');
+    restartButton.textContent = 'JOGAR NOVAMENTE';
+    restartButton.classList.add('game-button', 'restart-button');
+
+    restartButton.addEventListener('click', () => {
+        location.reload();
+    });
+    gameOverScreen.appendChild(gameOverText);
+    gameOverScreen.appendChild(scoreText);
+    gameOverScreen.appendChild(rankingTitle);
+    gameOverScreen.appendChild(rankingList);
+    gameOverScreen.appendChild(restartButton);
+    document.body.appendChild(gameOverScreen);
+}
+
+// Desenho (tudo que é visível no canvas)
+function draw() {
+    drawBackground();
+
+    if (gameStarted && !gameOver) {
+        if (chosenPlayerImage) { 
+            ctx.drawImage(chosenPlayerImage, player.x, player.y, player.width, player.height);
+        } else {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+    shieldItems.forEach(item => {
+        ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
+    });
+
+        if (isShieldActive) {
+            ctx.save(); 
+            ctx.beginPath(); 
+
+            const playerCenterX = player.x + player.width / 2;
+            const playerCenterY = player.y + player.height / 2;
+            const radius = Math.max(player.width, player.height) / 2 + 10; 
+
+            ctx.arc(playerCenterX, playerCenterY, radius, 0, Math.PI * 2, false);
+
+            ctx.fillStyle = "rgba(255, 255, 0, 0.4)"; 
+            ctx.fill(); 
+
+            ctx.strokeStyle = "rgba(255, 255, 0, 0.8)"; 
+            ctx.lineWidth = 2; 
+            ctx.stroke(); 
+
+            ctx.restore(); 
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+            ctx.fillRect(player.x, player.y + player.height + 5, player.width, 5);
+            ctx.fillStyle = "rgba(0, 255, 0, 0.9)";
+            ctx.fillRect(player.x, player.y + player.height + 8, player.width * (shieldTimer / SHIELD_DURATION), 5);
+        }
+
+                ///// STAGE 1 /////
+        if (currentStage === 1) {
+            for (let o of obstacles) {
+                ctx.drawImage(imgObstacle, o.x, o.y, o.width, o.height);
+            }
+            for (let item of slowdownItems) {
+                ctx.drawImage(imgSlowdown, item.x, item.y, item.width, item.height);
+            }
+             bonezin.forEach(item => {
+            if (item.image && item.image.complete) {
+            ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
+         } else {
+            ctx.fillStyle = 'purple'; 
+            ctx.fillRect(item.x, item.y, item.width, item.height);
+        }
+    });
+            for (let i = scorePopups.length - 1; i >= 0; i--) {
+                let popup = scorePopups[i];
+                ctx.save();
+                ctx.globalAlpha = popup.alpha;
+                ctx.fillStyle = "black";
+                ctx.font = "bold 20px 'Press Start 2P'"; 
+                ctx.textAlign = "center";
+                ctx.fillText(popup.text, popup.x, popup.y); 
+                ctx.restore();
+
+                popup.y -= 1; 
+                popup.alpha -= 0.02; 
+                popup.timer--;
+
+                if (popup.timer <= 0 || popup.alpha <= 0) {
+                    scorePopups.splice(i, 1); 
+                }
+            }
+
+            if (showStageMessage && currentStage === 1) {
+                ctx.save();
+                ctx.globalAlpha = stageMessageAlpha;
+                ctx.fillStyle = "black"; 
+                ctx.font = "bold 60px 'Press Start 2P'";
+                ctx.textAlign = "center";
+                ctx.fillText("STAGE 1", canvas.width / 2, canvas.height / 2);
+                ctx.restore();
+
+                stageMessageTimer--;
+                if (stageMessageTimer > STAGE_MESSAGE_DURATION / 2) {
+                    stageMessageAlpha = 1.0; 
+                } else {
+                    stageMessageAlpha -= 0.01; 
+                    if (stageMessageAlpha < 0) {
+                        stageMessageAlpha = 0;
+                        showStageMessage = false; 
+                    }
+                }
+            }
+
+            ///// STAGE 2 ///////
+
+        } else if (currentStage === 2) {
+            for (let o of stage2Obstacles) {
+                ctx.drawImage(o.image, o.x, o.y, o.width, o.height); 
+            }
+            ctx.drawImage(imgVillain, villain.x, villain.y, villain.width, villain.height);
+            for (let item of stage2Collectibles) {
+                ctx.drawImage(imgCollectibleSt2, item.x, item.y, item.width, item.height);
+            }
+
+            for (let i = scorePopups.length - 1; i >= 0; i--) {
+                let popup = scorePopups[i];
+                ctx.save();
+                ctx.globalAlpha = popup.alpha;
+                ctx.fillStyle = "black";
+                ctx.font = "bold 20px 'Press Start 2P'";
+                ctx.textAlign = "center";
+                ctx.fillText(popup.text, popup.x, popup.y);
+                ctx.restore();
+
+                popup.y -= 1;
+                popup.alpha -= 0.02;
+                popup.timer--;
+
+                if (popup.timer <= 0 || popup.alpha <= 0) {
+                    scorePopups.splice(i, 1);
+                }
+            }
+
+            if (showStageMessage) {
+                ctx.save();
+                ctx.globalAlpha = stageMessageAlpha;
+                ctx.fillStyle = "black";
+                ctx.font = "bold 60px 'Press Start 2P'";
+                ctx.textAlign = "center";
+                ctx.fillText("STAGE 2", canvas.width / 2, canvas.height / 2);
+                ctx.restore();
+
+                stageMessageTimer--;
+                if (stageMessageTimer > STAGE_MESSAGE_DURATION / 2) {
+                    stageMessageAlpha = 1.0;
+                } else {
+                    stageMessageAlpha -= 0.01;
+                    if (stageMessageAlpha < 0) {
+                        stageMessageAlpha = 0;
+                        showStageMessage = false;
+                    }
+                }
+            }
+        }
+                /////////// STAGE 3 //////////////////////////
+
+        } else if (currentStage === 3) {
+
+            if (showStageMessage) {
+                ctx.save();
+                ctx.globalAlpha = stageMessageAlpha;
+                ctx.fillStyle = "black";
+                ctx.font = "bold 60px 'Press Start 2P'";
+                ctx.textAlign = "center";
+                ctx.fillText("STAGE 3", canvas.width / 2, canvas.height / 2);
+                ctx.restore();
+
+                stageMessageTimer--;
+                if (stageMessageTimer > STAGE_MESSAGE_DURATION / 2) {
+                    stageMessageAlpha = 1.0;
+                } else {
+                    stageMessageAlpha -= 0.01;
+                    if (stageMessageAlpha < 0) {
+                        stageMessageAlpha = 0;
+                        showStageMessage = false;
+                    }
+                }
+            }
+        }
+        ctx.fillStyle = "black";
+        ctx.font = "20px 'Press Start 2P'";
+        ctx.fillText("Score: " + score, 20, 40);
+        ctx.fillText("Time: " + Math.floor(frame / 60) + "s", 20, 70);
+    }
 
 
 // Loop principal do jogo
 function gameLoop() {
-    if (gameOver) return;
-
-    if (gameStarted) { // Só atualiza se o jogo começou
-        frame++;
-
-        if (currentStage === 1) {
-            updateStage1();
-        } else if (currentStage === 2) {
-            updateStage2();
-        } else if (currentStage === 3) {
-            updateStage3();
-        }
-
-        drawGame(); // Desenha todos os elementos do jogo
-    }
-    requestAnimationFrame(gameLoop);
-}
-
-
-// TELA DE GAME OVER E RANKING
-
-async function showGameOver() {
-    gameOverMusic.play(); // Inicia a música de game over
-    hideTopButtons(); // Esconde os botões de informações
-    gameOverScreen.style.display = 'flex'; // Mostra a tela de Game Over
-
-    finalScoreText.textContent = `Pontuação Final: ${score}`; // Atualiza a pontuação final
-
-    // Event listener para o botão RESTART (agora no HTML)
-    restartButton.onclick = () => { // Usar onclick para evitar múltiplos listeners
-        gameOverMusic.pause();
-        gameOverMusic.currentTime = 0;
-        gameOverScreen.style.display = 'none'; // Esconde a tela de Game Over
-        initGame(); // Reinicia o estado do jogo
-        showStartScreen(); // Volta para a tela inicial
-    };
-
-    // Seção de Ranking
-    // Limpa a lista de ranking antes de preencher
-    rankingList.innerHTML = ''; 
-
-    // Salvar e carregar ranking (supondo que você tem um backend para isso)
-    await saveScore(playerNickname, score);
-    const topScores = await getRanking();
-
-    if (topScores && topScores.length > 0) {
-        topScores.forEach((entry, index) => {
-            const listItem = document.createElement('li');
-            listItem.textContent = `${index + 1}. ${entry.nickname}: ${entry.score}`;
-            rankingList.appendChild(listItem);
-        });
-    } else {
-        const noScoresItem = document.createElement('li');
-        noScoresItem.textContent = "Nenhum ranking disponível.";
-        noScoresItem.classList.add('no-scores');
-        rankingList.appendChild(noScoresItem);
-    }
-}
-
-
-// Funções de interação com o backend (MongoDB/Vercel)
-// Mantenha estas funções ou remova se não estiver usando um backend
-async function saveScore(nickname, score) {
-    try {
-        const response = await fetch('/api/save-score', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ nickname, score }),
-        });
-        const data = await response.json();
-        if (data.success) {
-            console.log('Pontuação salva com sucesso!');
-        } else {
-            console.error('Erro ao salvar pontuação:', data.message);
-        }
-    } catch (error) {
-        console.error('Erro de rede ao salvar pontuação:', error);
-    }
-}
-
-async function getRanking() {
-    try {
-        const response = await fetch('/api/get-ranking');
-        const data = await response.json();
-        if (data.success) {
-            return data.ranking;
-        } else {
-            console.error('Erro ao obter ranking:', data.message);
-            return [];
-        }
-    } catch (error) {
-        console.error('Erro de rede ao obter ranking:', error);
-        return [];
+    update();
+    draw();
+    if (!gameOver) {
+        requestAnimationFrame(gameLoop);
     }
 }
