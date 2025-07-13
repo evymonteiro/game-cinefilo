@@ -644,7 +644,7 @@ function checkCollision(a, b, scale = 1) {
 //################################################//
 
 function updateStage1() {
-    frame++;
+    //frame++;
 
     if (keys.left || isLeftTouched) {
         player.vx = -speed;
