@@ -523,8 +523,8 @@ document.addEventListener("keyup", (e) => {
     obstacles.push({
         x: Math.random() * (canvas.width - 60),
         y: 0,
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
     });
 }
 function spawnSlowdown() {
@@ -732,7 +732,7 @@ function updateStage1() {
         for (let i = obstacles.length - 1; i >= 0; i--) {
             let o = obstacles[i];
             o.y += obstacleSpeed;
-            if (checkCollision(player, o, 0.7)) { 
+            if (checkCollision(player, o, 0.6)) { 
                 if (isShieldActive) { 
                     obstacles.splice(i, 1);
                     scorePopups.push({ x: o.x + o.width / 2, y: o.y, alpha: 1.0, timer: 60, text: "Blocked" });
