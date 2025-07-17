@@ -318,8 +318,8 @@ canvas {
 .touch-controls-container {
     display: flex;
     justify-content: center; /* centraliza os botões horizontalmente */
-    gap: 30px;               /* espaço entre todos os botões */
-    margin-top: 40px;        /* distância do canvas */
+    gap: 200px;               /* espaço entre todos os botões */
+    margin-top: 120px;        /* distância do canvas */
     width: 100%;
     position: relative;      /* padrão para não sobrepor */
 }
