@@ -58,7 +58,7 @@ canvas {
     color: #fefefe;
     font-size: 2rem; 
     text-shadow: 0 0 10px rgba(82, 5, 5, 0.8);
-    margin-bottom: 2rem;
+    margin-bottom: 0.8rem;
     letter-spacing: 2px;
     text-align: center; 
 }
@@ -318,8 +318,8 @@ canvas {
 .touch-controls-container {
     display: flex;
     justify-content: center; /* centraliza os botões horizontalmente */
-    gap: 30px;               /* espaço entre todos os botões */
-    margin-top: 40px;        /* distância do canvas */
+    gap: 100px;               /* espaço entre todos os botões */
+    margin-top: 120px;        /* distância do canvas */
     width: 100%;
     position: relative;      /* padrão para não sobrepor */
 }
@@ -343,7 +343,7 @@ canvas {
 
 .touch-left-right-group {
   display: flex;
-  gap: 30px;
+  gap: 140px;
   justify-content: center;
   margin-bottom: 20px;
 }
