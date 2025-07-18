@@ -243,8 +243,8 @@ let villainSpeed = 0.002;
 const STAGE3_JUMP_STRENGTH = -20;
 let isPaused = false; 
 
-const STAGE_TRANSITION_SCORE = 1000;
-const STAGE2_TRANSITION_SCORE = 2000;
+const STAGE_TRANSITION_SCORE = 2500;
+const STAGE2_TRANSITION_SCORE = 5000;
 const STAGE3_TRANSITION_SCORE = 12000; // Pontuação para terminar a fase 3 
 
 
