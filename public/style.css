@@ -9,7 +9,10 @@ body {
     height: auto;
     font-family: 'Press Start 2P', cursive, sans-serif;
     color: white; 
-     overflow: hidden;
+    overflow: hidden;
+    Justify-content: center;
+    position: relative;
+
 }
 
 canvas {
@@ -18,7 +21,19 @@ canvas {
     width: 100%;
     height: auto;
     max-width: 900px;
-    aspect-ratio: 3/2
+    aspect-ratio: 3/2;
+    z-index: 1;
+}
+
+.victoryVideo {
+    position: fixed; 
+    top: 50%;           
+    left: 50%;         
+    transform: translate(-50%, -50%); 
+    z-index: 100000;       
+    display: none; 
+    width: 900px;
+    height: 600px;
 }
 
 .overlay-screen {
@@ -33,6 +48,7 @@ canvas {
     align-items: center;
     z-index: 100;
 }
+
 
 /* Estilos específicos para o container de start */
 .start-container {

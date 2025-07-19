@@ -1,5 +1,6 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const victoryVideoElement = document.getElementById('victoryVideo'); 
 
 // CRIAÇÃO DE BOTÕES VIRTUAIS PARA USO EM TOUCHSCREEN:
 
@@ -110,6 +111,8 @@ const gameOverMusic = new Audio();
 gameOverMusic.src = 'game_over.mp3';
 gameOverMusic.volume = 0.8;
 gameOverMusic.loop = true
+const jumpSound = new Audio();
+jumpSound.src = 'jumpSound.mp3'
 
 // STAGE 1
 const imgObstacle = new Image(); // Obstáculo Stage 1 (CLT)
@@ -152,6 +155,7 @@ const talk = new Image();
 const farol = new Image();
 const bring = new Image();
 const deer = new Image();
+const ST3_OBSTACLE_IMAGE = new Image();
 
 const st3platforms = [witch, hereditary, bodies, midsommar, talk,
     farol, bring, deer
@@ -194,6 +198,7 @@ talk.src = 'talk.png'
 farol.src = 'farol.png'
 bring.src = 'bring.png'
 deer.src = 'deer.png'
+ST3_OBSTACLE_IMAGE.src = 'ST3_OBSTACLE_IMAGE.png'; 
 
 
 /// CONFIG ÁUDIO: 
@@ -239,15 +244,16 @@ const villain = {
 let gravity = 0.6;
 let jumpStrength = -17; // Pulo do player
 let speed = 4; // Velocidade de movimento horizontal do player
-let villainSpeed = 0.002;
+let villainSpeed = 0.0009;
 const STAGE3_JUMP_STRENGTH = -20;
 let isPaused = false; 
-
-const STAGE_TRANSITION_SCORE = 2500;
-const STAGE2_TRANSITION_SCORE = 5000;
-const STAGE3_TRANSITION_SCORE = 12000; // Pontuação para terminar a fase 3 
+let gameWon = false;
+let gameOver = false;
 
 
+const STAGE_TRANSITION_SCORE = 2000;
+const STAGE2_TRANSITION_SCORE = 4500;
+const STAGE3_TRANSITION_SCORE = 8000; // Pontuação para terminar a fase 3 
 
 //Stage 1:
 
@@ -257,7 +263,6 @@ let shieldItems = [];
 let obstacleSpeed = 3.5; 
 let frame = 0;
 let score = 0;
-let gameOver = false;
 let buffsCollected = 0;
 let playerNickname = '';
 let scorePopups = []; 
@@ -308,15 +313,22 @@ let lastPlatformSpawnTime = 0; // Tempo do último spawn de plataforma
 const ST3_PLATFORM_SPAWN_INTERVAL = 30; // Intervalo de tempo para spawn de plataformas 
 let ST3_PLATFORM_SPEED = 2; // Velocidade de movimento das plataformas
 const MIN_PLATFORM_GAP = 50; // Espaçamento mínimo entre as plataformas na horizontal
-const MAX_PLATFORM_GAP = 250; // Espaçamento máximo entre as plataformas na horizontal
-const PLATFORM_HEIGHT_VARIATION = 100; // Variação máxima na altura das plataformas
+const MAX_PLATFORM_GAP = 200; // Espaçamento máximo entre as plataformas na horizontal
+const PLATFORM_HEIGHT_VARIATION = 250; // Variação máxima na altura das plataformas
 const INITIAL_PLATFORM_Y = canvas.height - 150; // Posição Y inicial da primeira plataforma
-
-const PLATFORM_DEFAULT_WIDTH = 150; // Largura padrão para as plataformas
-const PLATFORM_DEFAULT_HEIGHT = 60; // Altura padrão para as plataformas
 const PLATFORM_WIDTH = 250;
 const PLATFORM_HEIGHT = 100; 
 const FIXED_SECOND_PLATFORM_OFFSET = 100; 
+const ST3_MIN_PLATFORM_Y = canvas.height * 0.4; // Altura mínima para as plataformas (mais alto na tela)
+const ST3_MAX_PLATFORM_Y = canvas.height * 0.7; // Altura máxima para as plataformas (mais baixo na tela)
+const ST3_OBSTACLE_WIDTH = 60; 
+const ST3_OBSTACLE_HEIGHT = 60; 
+let playerOnPlatform = false;
+
+let hitsTaken = 0; // Começa com 0 acertos
+const MAX_HITS = 2;
+
+
 
 
 // TELA INICIAL BOTOES DE INFORMAÇÕES:
@@ -509,6 +521,7 @@ function drawBackground() {
     }
     else if (currentStage === 3) {
         ctx.drawImage(imgBackgroundSt3, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgBackgroundSt3, backgroundSt3X + canvas.width, 0, canvas.width, canvas.height);
     }
 }
 
@@ -657,26 +670,53 @@ function spawnStage3Platform() {
     const platformWidth = PLATFORM_WIDTH;
     const platformHeight = PLATFORM_HEIGHT;
 
-    // Define uma altura aleatória para a plataforma, baseada na variação
-    const randomYOffset = (Math.random() * PLATFORM_HEIGHT_VARIATION) - (PLATFORM_HEIGHT_VARIATION / 2);
-    let platformY = INITIAL_PLATFORM_Y + randomYOffset;
+    // Define uma altura aleatória para a plataforma, baseada na variação ST3_MIN/MAX_PLATFORM_Y
+    let platformY = Math.random() * (ST3_MAX_PLATFORM_Y - ST3_MIN_PLATFORM_Y) + ST3_MIN_PLATFORM_Y;
 
     // Garante que a plataforma não seja gerada muito perto do topo ou do chão
-    platformY = Math.max(canvas.height / 3, platformY); // Mínimo de 1/3 da altura do canvas
-    platformY = Math.min(canvas.height - player.height - platformHeight - 20, platformY); // Máximo, para evitar que fique muito perto do "fundo falso"
+    // (Esta lógica ainda é válida, mas 'randomY' já ajuda a conter isso)
+    //platformY = Math.max(canvas.height / 3, platformY); 
+    //platformY = Math.min(canvas.height - player.height - platformHeight - 20, platformY); 
 
     // Posição X inicial da plataforma, começando fora da tela à direita, com espaçamento aleatório
     const platformX = canvas.width + Math.random() * (MAX_PLATFORM_GAP - MIN_PLATFORM_GAP) + MIN_PLATFORM_GAP;
 
-    st3platformsArray.push({
+    const newPlatform = {
         image: platformImage,
         x: platformX,
-        y: platformY,
+        y: platformY, // Agora usa a altura Y aleatória calculada
         width: platformWidth, 
         height: platformHeight, 
-        onScreen: true, // Para rastrear se ainda está na tela
-        scored: false // Para pontuação (se for o caso)
-    });
+        onScreen: true,
+        scored: false,
+        obstacle: null // Inicializa sem obstáculo
+    };
+
+    // Lógica para adicionar um obstáculo a esta plataforma
+    // Adicione a imagem do obstáculo e defina sua posição relativa à plataforma
+    if (Math.random() < 0.8) { // de chance de spawnar um obstáculo
+        const obstaclePadding = 15; // Espaçamento das bordas da plataforma
+        // Posição X do obstáculo dentro da largura da plataforma
+        const minObstacleXOffset = obstaclePadding;
+        const maxObstacleXOffset = platformWidth - ST3_OBSTACLE_WIDTH - obstaclePadding;
+        
+        // Garante que haja espaço para o obstáculo dentro da plataforma
+        if (maxObstacleXOffset > minObstacleXOffset) {
+            const obstacleXOffset = minObstacleXOffset + Math.random() * (maxObstacleXOffset - minObstacleXOffset);
+            
+            newPlatform.obstacle = {
+                // x será calculado dinamicamente com base em platform.x
+                // Guardamos o offset inicial
+                offsetX: obstacleXOffset, 
+                y: platformY - ST3_OBSTACLE_HEIGHT, // Obstáculo fica acima da plataforma
+                width: ST3_OBSTACLE_WIDTH,
+                height: ST3_OBSTACLE_HEIGHT,
+                image: ST3_OBSTACLE_IMAGE // Usando a imagem global definida
+            };
+        }
+    }
+
+    st3platformsArray.push(newPlatform);
 }
 
 function spawnInitialPlatform() {
@@ -687,6 +727,9 @@ function spawnInitialPlatform() {
     const initialPlatformX = canvas.width / 4 - PLATFORM_WIDTH / 2; // Centraliza sob o player inicial
     const initialPlatformY = INITIAL_PLATFORM_Y; // Altura base
 
+    // NÃO ADICIONAR OBSTÁCULOS às plataformas iniciais fixas, apenas as rolantes.
+    // Se desejar obstáculos nas iniciais, adicione a lógica aqui também.
+
     st3platformsArray.push({
         image: platformImage,
         x: initialPlatformX,
@@ -695,12 +738,12 @@ function spawnInitialPlatform() {
         height: PLATFORM_HEIGHT,
         onScreen: true,
         scored: false,
-        isFixed: true, // Esta plataforma é fixa
-        hasSpawnedNext: false // Para controlar o spawn da primeira plataforma rolante (a 3ª no total)
+        isFixed: true,
+        hasSpawnedNext: false,
+        obstacle: null // Plataformas fixas não terão obstáculo por padrão
     });
 
     // Posição da SEGUNDA plataforma fixa inicial, afastada da primeira
-
     const initialPlatform2X = initialPlatformX + PLATFORM_WIDTH + FIXED_SECOND_PLATFORM_OFFSET;
     const initialPlatform2Y = INITIAL_PLATFORM_Y; // Pode ser a mesma altura ou variar um pouco
 
@@ -712,19 +755,17 @@ function spawnInitialPlatform() {
         height: PLATFORM_HEIGHT,
         onScreen: true,
         scored: false,
-        isFixed: true, // Esta plataforma também é fixa
-        hasSpawnedNext: false // Para controlar o spawn da primeira plataforma rolante
+        isFixed: true,
+        hasSpawnedNext: false,
+        obstacle: null // Plataformas fixas não terão obstáculo por padrão
     });
 
     // Coloca o player em cima da primeira plataforma
     player.x = initialPlatformX + PLATFORM_WIDTH / 2 - player.width / 2;
     player.y = initialPlatformY - player.height;
     player.onGround = true;
-    player.vy = 0; // Garante que o player não esteja caindo ao iniciar
-
-    console.log("DEBUG: Duas plataformas iniciais (fixas) configuradas. Primeira em X:", initialPlatformX, "Segunda em X:", initialPlatform2X);
+    player.vy = 0;
 }
-
 /////////////////////////////////////
 //////// FUNÇÃO GLOBAL - HITBOX /////
 /////////////////////////////////////
@@ -1083,11 +1124,11 @@ function updateStage2() {
             return;
         }
     }
-
      /// Transição de fase
 
     if (score >= STAGE2_TRANSITION_SCORE && currentStage === 2) {
         currentStage = 3;
+        hitsTaken = 0;
         showStageMessage = true;
         stageMessageTimer = STAGE_MESSAGE_DURATION; 
         obstacles = [];
@@ -1118,14 +1159,11 @@ function updateStage3() {
     } else if (keys.right || isRightTouched) {
         player.vx = speed;
     } else {
-        player.vx = 0; // Para o jogador se nenhuma tecla de movimento horizontal for pressionada
+        player.vx = 0; 
     }
 
-    // 2. Aplica as velocidades ao player (horizontal e vertical)
     player.x += player.vx;
     player.y += player.vy;
-
-    // 3. Aplica a gravidade (faz o player cair)
     player.vy += gravity;
 
     // 4. Limita o jogador às bordas da tela horizontalmente (ainda é importante)
@@ -1141,17 +1179,14 @@ function updateStage3() {
         player.vy = STAGE3_JUMP_STRENGTH;
         player.onGround = false;
         isJumpTouched = false;
-        // Toca o som de pulo aqui se houver
-        // jumpSound.play();
+        jumpSound.play();
     }
 
-
     // Mover o fundo para dar a impressão de corrida contínua 
-
     if (!showStageMessage) { 
-        backgroundSt3X  -= backgroundScrollSpeed + 0.1 * Math.sqrt(frame / 60);;
-        if (backgroundSt3X  <= -canvas.width) {
-            backgroundSt3X  += canvas.width; 
+        backgroundSt3X -= backgroundScrollSpeed
+        if (backgroundSt3X <= -canvas.width) {
+            backgroundSt3X += canvas.width; 
         }
     }
 
@@ -1169,33 +1204,29 @@ function updateStage3() {
     }
 
     // Lógica das plataformas (spawn, movimento, colisão)
-    // Este bloco só deve rodar DEPOIS que a mensagem some.
     if (!showStageMessage) {
-        // Obter a última plataforma, se existir
         const lastPlatform = st3platformsArray[st3platformsArray.length - 1];
 
         // --- LÓGICA DE SPAWN DA PRIMEIRA PLATAFORMA DINÂMICA (A SEGUNDA NO JOGO) ---
-        
         if (st3platformsArray.length === 1 && !lastPlatform.hasSpawnedNext && lastPlatform.x + lastPlatform.width < canvas.width * 0.8) {
-            // DEBUG: Log da posição da primeira plataforma para verificar
-            console.log("DEBUG: Primeira plataforma (inicial) X atual:", lastPlatform.x, "Largura:", lastPlatform.width);
-
+            // Este bloco foi deixado vazio no código original, mantido assim.
         }
-        // Lógica normal de spawn para as plataformas subsequentes (após a segunda)
-        // Esta lógica só será ativada quando houver mais de uma plataforma na lista
-        // E o tempo de spawn e distância da última plataforma forem adequados.
         else if (st3platformsArray.length > 1 && frame - lastPlatformSpawnTime >= ST3_PLATFORM_SPAWN_INTERVAL) {
             // Verifica se a última plataforma existente está longe o suficiente
             if (lastPlatform && lastPlatform.x + lastPlatform.width + MIN_PLATFORM_GAP < canvas.width + 100) {
-                 spawnStage3Platform(); // Chamada normal sem argumento, usará a lógica aleatória
-                 lastPlatformSpawnTime = frame;
-                 console.log("DEBUG: Plataforma normal spawnada.");
+                spawnStage3Platform(); 
+                lastPlatformSpawnTime = frame;
             }
         }
 
+        // NOVO: Resetar playerOnPlatform a cada frame para recalcular se o player está no chão
+        let playerCurrentlyOnAnyPlatform = false;
+
         for (let i = st3platformsArray.length - 1; i >= 0; i--) {
             let platform = st3platformsArray[i];
-            platform.x -= ST3_PLATFORM_SPEED; // Plataformas se movem para a esquerda
+            
+            // Movimento da plataforma
+            platform.x -= ST3_PLATFORM_SPEED
 
             // Lógica de colisão do player com a plataforma (apenas por cima)
             if (player.vy >= 0 && // O jogador está caindo
@@ -1207,6 +1238,7 @@ function updateStage3() {
                 player.y = platform.y - player.height; // Ajusta a posição do jogador para cima da plataforma
                 player.vy = 0; // Para a queda
                 player.onGround = true; // Considera o jogador "no chão" da plataforma
+                playerCurrentlyOnAnyPlatform = true; // Indica que o player está em alguma plataforma
 
                 // Pontuação por pular em cima de uma plataforma
                 if (!platform.scored) {
@@ -1218,32 +1250,62 @@ function updateStage3() {
                        (player.x > platform.x + platform.width || player.x + player.width < platform.x)) {
                 // Se o player estava em uma plataforma e saiu dela (caiu para os lados)
                 // Isso garante que ele volte a cair se sair da plataforma
-                player.onGround = false;
+                // NOTA: Esta lógica será melhor tratada pelo `playerCurrentlyOnAnyPlatform` após o loop.
             }
 
-            // REMOÇÃO DA PLATAFORMA: Ajuste esta margem para ela só sumir MUITO DEPOIS de sair da tela
-            // Um valor como -1000 significa que ela só é removida quando está 1000 pixels FORA da tela.
+            // NOVO: Lógica de colisão do player com o OBSTÁCULO (se houver um)
+            if (platform.obstacle) {
+                // Calcular a posição X real do obstáculo para a colisão
+                const obstacleActualX = platform.x + platform.obstacle.offsetX;
+
+                // Criar um objeto temporário para o obstáculo com a posição atual
+                const currentObstacle = {
+                    x: obstacleActualX,
+                    y: platform.obstacle.y, // A posição Y do obstáculo é fixa em relação à plataforma
+                    width: platform.obstacle.width,
+                    height: platform.obstacle.height
+                };
+
+                // Usar sua função checkCollision para verificar a colisão
+                if (checkCollision(player, currentObstacle, 0.7)) {
+                hitsTaken++;
+                scorePopups.push({ x: player.x + player.width / 2, y: player.y - 20, alpha: 1.0, timer: 90, text: `HIT! (${hitsTaken}/${MAX_HITS})`, color: "red" });
+                platform.obstacle = null; // Remove o obstáculo após a colisão
+                if (hitsTaken >= MAX_HITS) {
+                    gameOver = true;
+                    if (bgMusicSt3) bgMusicSt3.pause();
+                    // if (gameOverSound) gameOverSound.play(); // Descomente se você tiver uma variável gameOverSound
+                    showGameOver();
+                    return; // Importante: para a função update imediatamente após o Game Over
+                }
+            }}
+
             // Isso GARANTE que a plataforma não seja removida antes que a próxima seja spawnada.
-            if (platform.x + platform.width < -1000) {
+            if (platform.x + platform.width < -1000) { // Mantenha -1000 como no seu original
                 st3platformsArray.splice(i, 1);
-                console.log("DEBUG: Plataforma removida. Total no array:", st3platformsArray.length);
             }
         }
 
-        // Lógica de "game over" se o jogador cair no chão (abaixo de um certo Y)
-        if (player.y + player.height > canvas.height + 50) { // Um pouco abaixo da tela para dar margem
+        // NOVO: Lógica para garantir que player.onGround seja false se não houver plataforma sob ele
+        if (!playerCurrentlyOnAnyPlatform && player.y + player.height < canvas.height - 20) { // Adicione uma pequena margem do "chão" falso
+            player.onGround = false;
+        }
+
+
+        // Se cair abaixo da tela, é Game Over
+        if (player.y + player.height > canvas.height + 50) {
             gameOver = true;
             if (bgMusicSt3) bgMusicSt3.pause();
+            // if (gameOverSound) gameOverSound.play(); // Descomente se você tiver uma variável gameOverSound
             showGameOver();
             return;
         }
 
-        // Transição para tela de vitória)
+        // Transição para tela de vitória
         if (score >= STAGE3_TRANSITION_SCORE && currentStage === 3) {
-            console.log("DEBUG: Parabéns! Você completou a Fase 3!");
-            gameOver = true; // Por enquanto, consideramos game over como vitória para simplificar
-            if (bgMusicSt3) bgMusicSt3.pause(); // Garante que a música da Stage 3 pare
-            showVictoryScreen(); // Você precisaria criar essa função
+            gameWon = true;
+            if (bgMusicSt3) bgMusicSt3.pause();
+            showVictoryScreen();
             return;
         }
     }
@@ -1255,7 +1317,7 @@ function updateStage3() {
 //#######################################################
 
 function update() {
-    if (!gameStarted || gameOver) {
+    if (!gameStarted || gameOver || gameWon) {
         player.vx = 0;
         return;
     }
@@ -1417,7 +1479,7 @@ function draw() {
 
     drawBackground();
 
-    if (gameStarted && !gameOver) {
+    if (gameStarted && !gameOver && !gameWon) {
         if (chosenPlayerImage) { 
             ctx.drawImage(chosenPlayerImage, player.x, player.y, player.width, player.height);
         } else {
@@ -1433,7 +1495,7 @@ function draw() {
     ctx.beginPath();
 
     const playerCenterX = player.x + player.width / 2;
-    const playerCenterY = player.y + player.height / 2; // Mantemos o escudo centrado no jogador
+    const playerCenterY = player.y + player.height / 2;
 
     const radius = Math.max(player.width, player.height) / 2 + 10; // Raio do escudo
 
@@ -1448,7 +1510,6 @@ function draw() {
 
     ctx.restore(); // Restaura o estado anterior do contexto do canvas
 
-    // --- Ajuste da APARÊNCIA e POSIÇÃO da barra de tempo do escudo ---
     const barHeight = 7; 
     const barYPosition = player.y - 20;
     const barWidth = player.width; // A largura da barra é a mesma do jogador
@@ -1577,60 +1638,76 @@ function draw() {
         }
 /////////// STAGE 3 //////////////////////////
 
-        else if (currentStage === 3) {
-            // Desenha as plataformas da Stage 3
-            for (let platform of st3platformsArray) {
-                // Verifica se a imagem da plataforma foi carregada antes de desenhar
-                if (platform.image && platform.image.complete) {
-                    ctx.drawImage(platform.image, platform.x, platform.y, platform.width, platform.height);
-                } else {
-                    // Fallback: desenha um retângulo se a imagem não estiver carregada
-                    ctx.fillStyle = 'gray'; // Cor de placeholder
-                    ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
-                }
+   // Assumindo que este é o bloco dentro da sua função draw() ou gameLoop()
+// onde você lida com o desenho da Stage 3
+else if (currentStage === 3) {
+    // Desenha as plataformas da Stage 3
+    for (let platform of st3platformsArray) {
+        if (platform.image && platform.image.complete) {
+            ctx.drawImage(platform.image, platform.x, platform.y, platform.width, platform.height);
+        } else {
+            // Fallback: desenha um retângulo se a imagem não estiver carregada
+            ctx.fillStyle = 'gray'; // Cor de placeholder
+            ctx.fillRect(platform.x, platform.y, platform.width, platform.height);
+        }
+
+        // NOVO: Desenha o obstáculo SE ele existir para esta plataforma
+        // Esta lógica DEVE estar dentro do loop 'for (let platform of st3platformsArray)'
+        if (platform.obstacle) {
+            // Calcule a posição X real do obstáculo baseada na plataforma atual
+            const obstacleActualX = platform.x + platform.obstacle.offsetX;
+            // Verifica se a imagem do obstáculo está carregada antes de desenhar
+            if (platform.obstacle.image && platform.obstacle.image.complete) {
+                ctx.drawImage(platform.obstacle.image, obstacleActualX, platform.obstacle.y, platform.obstacle.width, platform.obstacle.height);
+            } else {
+                // Fallback para o obstáculo: desenha um retângulo se a imagem não estiver carregada
+                ctx.fillStyle = 'red'; // Cor de placeholder para obstáculo
+                ctx.fillRect(obstacleActualX, platform.obstacle.y, platform.obstacle.width, platform.obstacle.height);
             }
+        }
+    }
 
-            // Popups de pontuação para a Stage 3
-            for (let i = scorePopups.length - 1; i >= 0; i--) {
-                let popup = scorePopups[i];
-                ctx.save();
-                ctx.globalAlpha = popup.alpha;
-                ctx.fillStyle = "black";
-                ctx.font = "bold 20px 'Press Start 2P'";
-                ctx.textAlign = "center";
-                ctx.fillText(popup.text, popup.x, popup.y);
-                ctx.restore();
+    // Popups de pontuação para a Stage 3
+    for (let i = scorePopups.length - 1; i >= 0; i--) {
+        let popup = scorePopups[i];
+        ctx.save();
+        ctx.globalAlpha = popup.alpha;
+        ctx.fillStyle = "black";
+        ctx.font = "bold 20px 'Press Start 2P'";
+        ctx.textAlign = "center";
+        ctx.fillText(popup.text, popup.x, popup.y);
+        ctx.restore();
 
-                popup.y -= 1;
-                popup.alpha -= 0.02;
-                popup.timer--;
+        popup.y -= 1;
+        popup.alpha -= 0.02;
+        popup.timer--;
 
-                if (popup.timer <= 0 || popup.alpha <= 0) {
-                    scorePopups.splice(i, 1);
-                }
+        if (popup.timer <= 0 || popup.alpha <= 0) {
+            scorePopups.splice(i, 1);
+        }
+    }
+
+    if (showStageMessage) {
+        ctx.save();
+        ctx.globalAlpha = stageMessageAlpha;
+        ctx.fillStyle = "black";
+        ctx.font = "bold 60px 'Press Start 2P'";
+        ctx.textAlign = "center";
+        ctx.fillText("STAGE 3", canvas.width / 2, canvas.height / 2);
+        ctx.restore();
+
+        stageMessageTimer--;
+        if (stageMessageTimer > STAGE_MESSAGE_DURATION / 2) {
+            stageMessageAlpha = 1.0;
+        } else {
+            stageMessageAlpha -= 0.01;
+            if (stageMessageAlpha < 0) {
+                stageMessageAlpha = 0;
+                showStageMessage = false;
             }
-
-            if (showStageMessage) {
-                ctx.save();
-                ctx.globalAlpha = stageMessageAlpha;
-                ctx.fillStyle = "black";
-                ctx.font = "bold 60px 'Press Start 2P'";
-                ctx.textAlign = "center";
-                ctx.fillText("STAGE 3", canvas.width / 2, canvas.height / 2);
-                ctx.restore();
-
-                stageMessageTimer--;
-                if (stageMessageTimer > STAGE_MESSAGE_DURATION / 2) {
-                    stageMessageAlpha = 1.0;
-                } else {
-                    stageMessageAlpha -= 0.01;
-                    if (stageMessageAlpha < 0) {
-                        stageMessageAlpha = 0;
-                        showStageMessage = false;
-                    }
-                }
-            }}}
-
+        }
+    }
+}}
         ctx.save(); // Salva o estado ANTES de desenhar o HUD
         ctx.fillStyle = "black";
         ctx.font = "20px 'Press Start 2P'";
@@ -1662,15 +1739,58 @@ function draw() {
     else if (gameOver) {
     } else if (!gameStarted) {
     }
+
+    //////////////////// TELA DE VITÓRIA 
+    if (gameWon) {
+        showVictoryScreen();
+    }
 }
 
 
+//////// TELA DE VITÓRIA //////////
+
+////////// TELA DE VITÓRIA //////////
+function showVictoryScreen() {
+    console.log("Chamando showVictoryScreen...");
+
+    // Ocultar o canvas do jogo
+    if (gameCanvas) {
+        console.log("Escondendo canvas. Current display:", gameCanvas.style.display);
+        gameCanvas.style.display = 'none';
+        console.log("Canvas agora é display:", gameCanvas.style.display);
+    } else {
+        console.error("gameCanvas não encontrado!");
+    }
+
+    // Garantir que o elemento de vídeo está visível
+    if (victoryVideoElement) {
+        victoryVideoElement.style.display = 'block';
+        victoryVideoElement.src = 'end.mp4'; 
+        victoryVideoElement.load(); 
+        victoryVideoElement.play()
+            .then(() => {
+                console.log("Vídeo de vitória iniciado com sucesso!");
+            })
+            .catch(error => {
+                console.error("Erro ao tentar reproduzir o vídeo de vitória:", error);
+            });
+
+        victoryVideoElement.onended = () => {
+            victoryVideoElement.style.display = 'none';
+            if (gameCanvas) gameCanvas.style.display = 'block';
+            resetGame();
+        };
+    } else {
+        console.error("Elemento de vídeo de vitória não encontrado no HTML!");
+    }
+}
+
 // Loop principal do jogo
 function gameLoop() {
-    if (!gameOver) {
+    if (!gameOver && !gameWon) {
 requestAnimationFrame(gameLoop);
     }
-if (!isPaused) {
+if (!isPaused &&!gameOver && !gameWon) {
  update();}
 
 draw();
