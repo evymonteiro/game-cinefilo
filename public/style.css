@@ -117,11 +117,14 @@ canvas {
     font-size: 2rem;
     margin-top: -1rem;
     margin-bottom: 1rem;
-    font-weight: bold; 
-    border: 10x, yellow;
+    font-weight: bold;
+    background-color: red;
     padding: 5px;
     display: inline-block;
+    border: 2px solid yellow;
+    border-radius: 4px;
 }
+
 
 .game-button {
     padding: 15px 40px;
