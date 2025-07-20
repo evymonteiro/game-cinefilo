@@ -251,9 +251,9 @@ let gameWon = false;
 let gameOver = false;
 
 
-const STAGE_TRANSITION_SCORE = 2000;
-const STAGE2_TRANSITION_SCORE = 4000;
-const STAGE3_TRANSITION_SCORE = 7000; // Pontuação para terminar a fase 3 
+const STAGE_TRANSITION_SCORE = 2500;
+const STAGE2_TRANSITION_SCORE = 5000;
+const STAGE3_TRANSITION_SCORE = 8000; // Pontuação para terminar a fase 3 
 
 //Stage 1:
 
@@ -694,7 +694,7 @@ function spawnStage3Platform() {
 
     // Lógica para adicionar um obstáculo a esta plataforma
     // Adicione a imagem do obstáculo e defina sua posição relativa à plataforma
-    if (Math.random() < 0.8) { // de chance de spawnar um obstáculo
+    if (Math.random() < 0.85) { // de chance de spawnar um obstáculo
         const obstaclePadding = 15; // Espaçamento das bordas da plataforma
         // Posição X do obstáculo dentro da largura da plataforma
         const minObstacleXOffset = obstaclePadding;
