@@ -87,6 +87,7 @@ canvas {
 }
 
 .ranking-title {
+    background-color: black;
     color: #9b0404;
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -162,12 +163,14 @@ canvas {
 }
 
 .final-score-text {
+    background-color: black;
     font-size: 2rem;
     margin-bottom: 2rem;
     color: #9b0404;
 }
 
 .ranking-list {
+    background-color: black;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -176,12 +179,14 @@ canvas {
 }
 
 .ranking-list li {
+    background-color: black;
     font-size: 1.4rem;
     margin-bottom: 0.5rem;
     color:#9b0404;
 }
 
-.ranking-list .no-scores { 
+.ranking-list .no-scores {
+    background-color: black;
     font-size: 1.2rem;
     color:#9b0404;
 }
