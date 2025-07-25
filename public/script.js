@@ -120,7 +120,7 @@ const imgSlowdown = new Image(); // Item de slowdown Stage 1 (Absolute Cinema)
 const imgBackground = new Image(); // Background Stage 1
 const bgMusic = new Audio(); // Música Stage 1
 const collectSound = new Audio(); // Som de coleta Stage 1
-const buff_score = 150; // Pontuação para o buff de slowdown
+const buff_score = 200; // Pontuação para o buff de slowdown
 const imgShield = new Image();
 const shieldSound = new Audio();
 const bone_mubi = new Image();
@@ -251,9 +251,9 @@ let gameWon = false;
 let gameOver = false;
 
 
-const STAGE_TRANSITION_SCORE = 2500;
-const STAGE2_TRANSITION_SCORE = 5000;
-const STAGE3_TRANSITION_SCORE = 8000; // Pontuação para terminar a fase 3 
+const STAGE_TRANSITION_SCORE = 2000;
+const STAGE2_TRANSITION_SCORE = 4000;
+const STAGE3_TRANSITION_SCORE = 6500; // Pontuação para terminar a fase 3 
 
 //Stage 1:
 
